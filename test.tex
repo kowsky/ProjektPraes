@@ -1,0 +1,85 @@
+\documentclass[aspectratio=1610]{beamer}
+
+\usetheme[1610]{ZBH}
+\usepackage{graphicx}
+\usepackage{algorithm2e}
+\usepackage{numprint}
+
+\author{Meike Bruhns, Florian Markowsky, Michael Spohn}
+\title{Implementation of KSEARCH and SANS Algorithms in the genometools-environment}
+\date{\today}
+
+\begin{document}
+
+\btBeginSubsection []
+ {
+  \begin{frame} 
+    \frametitle{Gliederung}
+    \tableofcontents[currentsection, currentsubsection]
+  \end{frame}
+}
+
+\titlepage
+\end{frame}
+
+\begin{frame}
+	\frametitle{Outline}
+	\tableofcontents
+\end{frame}
+
+\section{Concept}
+
+\begin{frame}{Sequence comparison}
+  \begin{itemize}
+    \item Determing similarity of sequences very important task in sequence analysis
+    \item Most commonly used: BLAST
+  \end{itemize}
+\end{frame}
+
+\section{Algorithms}
+
+\subsection{KSEARCH}
+
+\begin{frame}{Idea}
+  \begin{itemize}
+    \item Count frequencies of kmers in query sequence
+    \item Compare to kmer frequencies of database entrys
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Analysis}
+  \begin{itemize}
+    \item Runtime:
+    \item Space requirements:
+  \end{itemize}
+\end{frame}
+
+\subsection{SANS}
+
+\begin{frame}{Idea}
+  \begin{itemize}
+    \item Construct suffix tree for query sequence $q$
+    \item Construct suffix tree for database sequences
+    \item Merge suffix trees:
+      \begin{itemize}
+        \item for each suffix of $q$
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Analysis}
+\end{frame}
+
+\section{Implementation}
+
+\subsection{Our implementation}
+
+\begin{frame}{genometools}
+\end{frame}
+
+\subsection{Comparison to developers implementation}
+
+\begin{frame}{}
+\end{frame}
+
+\end{document}

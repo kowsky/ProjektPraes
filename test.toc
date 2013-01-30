@@ -1,0 +1,10 @@
+\select@language {english}
+\beamer@endinputifotherversion {3.12pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Concept}{5}{0}{1}
+\beamer@sectionintoc {2}{Algorithms}{6}{0}{2}
+\beamer@subsectionintoc {2}{1}{KSEARCH}{6}{0}{2}
+\beamer@subsectionintoc {2}{2}{SANS}{8}{0}{2}
+\beamer@sectionintoc {3}{Implementation}{10}{0}{3}
+\beamer@subsectionintoc {3}{1}{Our implementation}{10}{0}{3}
+\beamer@subsectionintoc {3}{2}{Comparison to developers implementation}{11}{0}{3}
