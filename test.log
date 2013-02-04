@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.29)  3 FEB 2013 18:37
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.10.29)  4 FEB 2013 13:29
 entering extended mode
  %&-line parsing enabled.
 **test.tex
@@ -675,67 +675,53 @@ Language: english 2005/03/30 v3.3o English support from the babel system
 \l@australian = a dialect from \language\l@british 
 \l@newzealand = a dialect from \language\l@british 
 )))
-(/usr/share/texmf-texlive/tex/latex/algorithm2e/algorithm2e.sty
-Package: algorithm2e 2005/10/04 v3.9 algorithms environments
-\c@AlgoLine=\count151
+(/usr/share/texmf-texlive/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
 
-(/usr/share/texmf-texlive/tex/latex/tools/xspace.sty
-Package: xspace 2006/05/08 v1.12 Space after command names (DPC,MH)
+(/usr/share/texmf-texlive/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count151
+\c@ALG@rem=\count152
+\c@ALG@nested=\count153
+\ALG@tlm=\skip58
+\ALG@thistlm=\skip59
+\c@ALG@Lnr=\count154
+\c@ALG@blocknr=\count155
+\c@ALG@storecount=\count156
+\c@ALG@tmpcounter=\count157
+\ALG@tmplength=\skip60
 )
-********************************************************
-Package `algorithm2e' Release 3.9 -- october 04 2005 --
-- algorithm2e-announce@lirmm.fr mailing list for announcement about releases
-- algorithm2e-discussion@lirmm.fr mailing list for discussion about package
-subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
-- Author: Christophe Fiorio (fiorio@lirmm.fr)
-********************************************************
-\skiptotal=\skip58
-\skiprule=\skip59
-\skiphlne=\skip60
-\skiptext=\skip61
-\skiplength=\skip62
-\algomargin=\skip63
-\skipalgocfslide=\skip64
-\algowidth=\dimen179
-\inoutsize=\dimen180
-\inoutline=\dimen181
-\algocf@inoutbox=\box53
-\algocf@inputbox=\box54
-\AlCapSkip=\skip65
-\AlCapHSkip=\skip66
-\algocf@capbox=\box55
-\c@algocfline=\count152
-\c@algocf=\count153
-\algocf@algoframe=\box56
-\algocf@algobox=\box57
+Document Style - pseudocode environments for use with the `algorithmicx' style
 ) (/usr/share/texmf-texlive/tex/latex/numprint/numprint.sty
 Package: numprint 2008/02/17 v1.38 Print numbers (HH)
 
 (/usr/share/texmf-texlive/tex/latex/tools/array.sty
 Package: array 2008/09/09 v2.4c Tabular extension package (FMi)
-\col@sep=\dimen182
-\extrarowheight=\dimen183
+\col@sep=\dimen179
+\extrarowheight=\dimen180
 \NC@list=\toks41
-\extratabsurround=\skip67
-\backup@length=\skip68
+\extratabsurround=\skip61
+\backup@length=\skip62
 )
-\c@nprt@mantissa@digitsbefore=\count154
-\c@nprt@mantissa@digitsafter=\count155
-\c@nprt@exponent@digitsbefore=\count156
-\c@nprt@exponent@digitsafter=\count157
-\nprt@digitwidth=\skip69
-\nprt@sepwidth=\skip70
-\nprt@decimalwidth=\skip71
-\nprt@blockwidth=\skip72
+\c@nprt@mantissa@digitsbefore=\count158
+\c@nprt@mantissa@digitsafter=\count159
+\c@nprt@exponent@digitsbefore=\count160
+\c@nprt@exponent@digitsafter=\count161
+\nprt@digitwidth=\skip63
+\nprt@sepwidth=\skip64
+\nprt@decimalwidth=\skip65
+\nprt@blockwidth=\skip66
 \nprt@digittoks=\toks42
 \nprt@pretoks=\toks43
 \nprt@posttoks=\toks44
-\nprt@thisdigit=\count158
-\nprt@curpos=\count159
-\nprt@rndpos=\count160
-\c@nprt@digitsfirstblock=\count161
-\c@nprt@blockcnt=\count162
-\c@nprt@cntprint=\count163
+\nprt@thisdigit=\count162
+\nprt@curpos=\count163
+\nprt@rndpos=\count164
+\c@nprt@digitsfirstblock=\count165
+\c@nprt@blockcnt=\count166
+\c@nprt@cntprint=\count167
 
 No configuration file `numprint.cfg' found.)
 (/usr/share/texmf-texlive/tex/latex/base/inputenc.sty
@@ -1024,15 +1010,15 @@ driver: pdftex
 -----------------------
 (/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count164
-\scratchdimen=\dimen184
-\scratchbox=\box58
-\nofMPsegments=\count165
-\nofMParguments=\count166
+\scratchcounter=\count168
+\scratchdimen=\dimen181
+\scratchbox=\box53
+\nofMPsegments=\count169
+\nofMParguments=\count170
 \everyMPshowfont=\toks47
-\MPscratchCnt=\count167
-\MPscratchDim=\dimen185
-\MPnumerator=\count168
+\MPscratchCnt=\count171
+\MPscratchDim=\dimen182
+\MPnumerator=\count172
 \everyMPtoPDFconversion=\toks48
 ) ABD: EveryShipout initializing macros
 Package hyperref Info: Link coloring OFF on input line 16.
@@ -1043,7 +1029,7 @@ Package: nameref 2007/05/29 v2.31 Cross-referencing by name of section
 (/usr/share/texmf-texlive/tex/latex/oberdiek/refcount.sty
 Package: refcount 2008/08/11 v3.1 Data extraction from references (HO)
 )
-\c@section@level=\count169
+\c@section@level=\count173
 )
 LaTeX Info: Redefining \ref on input line 16.
 LaTeX Info: Redefining \pageref on input line 16.
@@ -1052,7 +1038,7 @@ LaTeX Info: Redefining \pageref on input line 16.
 \@outlinefile=\write5
 \openout5 = `test.out'.
 
-\AtBeginShipoutBox=\box59
+\AtBeginShipoutBox=\box54
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 16.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
@@ -1211,16 +1197,6 @@ File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
  <use vorlage_uni_16_10.jpeg> [7
 
 ]
-LaTeX Font Info:    Font shape `OT1/phv/m/n' will be
-(Font)              scaled to size 5.95004pt on input line 151.
-LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <10> not available
-(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 151.
-LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
-(Font)              scaled to size 8.50006pt on input line 151.
-LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <7> not available
-(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 151.
-LaTeX Font Info:    Font shape `OT1/phv/m/sl' will be
-(Font)              scaled to size 5.95004pt on input line 151.
 File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
 
 <use vorlage_uni_16_10.jpeg> [8
@@ -1239,6 +1215,15 @@ File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
  <use vorlage_uni_16_10.jpeg> [11
 
 ]
+File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
+
+<use vorlage_uni_16_10.jpeg> [12
+
+]
+File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
+ <use vorlage_uni_16_10.jpeg> [13
+
+]
 \tf@nav=\write6
 \openout6 = `test.nav'.
 
@@ -1250,28 +1235,28 @@ File: vorlage_uni_16_10.jpeg Graphic file (type jpg)
 
  (./test.aux) ) 
 Here is how much of TeX's memory you used:
- 16541 strings out of 493848
- 297296 string characters out of 1152822
- 398328 words of memory out of 3000000
- 19333 multiletter control sequences out of 15000+50000
- 40794 words of font info for 83 fonts, out of 3000000 for 9000
+ 16034 strings out of 493848
+ 291687 string characters out of 1152822
+ 369115 words of memory out of 3000000
+ 18822 multiletter control sequences out of 15000+50000
+ 35974 words of font info for 72 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
  49i,14n,55p,393b,618s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/shar
 e/texmf-texlive/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-tex
 live/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/
 type1/public/amsfonts/cm/cmss10.pfb></usr/share/texmf-texlive/fonts/type1/publi
-c/amsfonts/cm/cmss9.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
-m/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy8.pfb
-></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share
-/texmf-texlive/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texmf
--texlive/fonts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texmf-texliv
-e/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw
-/helvetic/uhvr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/helvetic/uhvro8a
-.pfb>
-Output written on test.pdf (11 pages, 260475 bytes).
+c/amsfonts/cm/cmss8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
+m/cmss9.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share
+/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texmf-texli
+ve/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texmf-texlive/fon
+ts/type1/public/amsfonts/symbols/msam7.pfb></usr/share/texmf-texlive/fonts/type
+1/urw/helvetic/uhvb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/helvetic/uh
+vr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on test.pdf (13 pages, 274817 bytes).
 PDF statistics:
- 170 PDF objects out of 1000 (max. 8388607)
- 30 named destinations out of 1000 (max. 500000)
+ 186 PDF objects out of 1000 (max. 8388607)
+ 34 named destinations out of 1000 (max. 500000)
  99 words of extra memory for PDF output out of 10000 (max. 10000000)
 

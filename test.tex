@@ -2,7 +2,7 @@
 
 \usetheme[1610]{ZBH}
 \usepackage{graphicx}
-\usepackage{algorithm2e}
+\usepackage[noend]{algpseudocode}
 \usepackage{numprint}
 \usepackage[utf8]{inputenc}
 
@@ -116,13 +116,13 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Implementierung und Analyse}
+\begin{frame}{Implementierungsansatz und Analyse}
   \begin{itemize}
     \item Koskinen \& Holm
       \begin{itemize}
         \item Berechnung des KSEARCH-Scores mittels Suffixarrays:
           \begin{itemize}
-            \item Laufzeit: $O(|TXT|*|TXT_Q|)$ + Konstruktion der Suffixarrays
+            \item Laufzeit: $O(|TXT|*|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
             \item Speicherplatzbedarf:
           \end{itemize}
       \end{itemize}
@@ -130,7 +130,7 @@
       \begin{itemize}
         \item Berechnung der KSEARCH-Scores mittels k-mer-Profilen
           \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|+|\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ???
+            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ???
             \item Speicherplatzbedarf: $O(|Anzahl Qprots| \cdot \mathcal A^k + Anzahl Qprots \cdot Anzahl Sprots)$
           \end{itemize}
       \end{itemize}
@@ -139,23 +139,141 @@
 
 
 \subsection{SANS}
-\begin{frame}{Idea}
+%\begin{frame}{Idea}
+%  \begin{itemize}
+%    \item Construct suffix tree for query sequence $q$
+%    \item Construct suffix tree for database sequences
+%    \item Merge suffix trees:
+%      \begin{itemize}
+%        \item for each suffix of $q$
+%      \end{itemize}
+%  \end{itemize}
+%\end{frame}
+
+\begin{frame}{Idee}
   \begin{itemize}
-    \item Construct suffix tree for query sequence $q$
-    \item Construct suffix tree for database sequences
-    \item Merge suffix trees:
-      \begin{itemize}
-        \item for each suffix of $q$
-      \end{itemize}
+    \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben mit hoher Wahrscheinlichkeit gemeinsame Präfixe
+    \item  SANS-Scores nutzen das aus, indem der Score aus den Positionen der Sequenzen im Suffixarray abgeleitet werden.
   \end{itemize}
+%  \begin{figure}
+%        \includegraphics<1>[width=2cm,height=3.5cm]{First.eps}
+%        \includegraphics<2>[width=2cm,height=3.5cm]{Second.eps}
+%        \caption<1>{\only<1>{First Image}\only<2>{Second Image}}
+%        %\caption<2>{Second Image}
+%    \end{figure} 
 \end{frame}
 
-\begin{frame}{Analysis}
+\begin{frame}
+  \begin{equation*}
+    SANS(qprot,sprot) = \sum_{s=START[qprot]}^{START[qprot+1]-1} \sum_{i=-w}^{+w} id(sprot,SAP[ISA_{mapped}[s]+i]) 
+  \end{equation*}
+
+  Mit der Identitätsfunktion
+
+  \begin{equation*}
+    id(a,b)=\begin{cases}
+      1, & if~a=b\\
+      0, & if~a\ne b\\
+    \end{cases}
+  \end{equation*}
+\end{frame}
+
+\begin{frame}{Implementierungsansatz und Analyse}
+  \begin{itemize}
+    \item Koskinen \& Holm
+      \begin{itemize}
+        \item Ermitteln der Positionen durch Mergen der Suffixarrays
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
+            \item Speicherplatzbedarf:
+          \end{itemize}
+      \end{itemize}
+    \item Unsere Implementierung
+      \begin{itemize}
+        \item Ermitteln der Positionen durch for-Schleifen
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + Konstruktion der Suffixarrays
+            \item Speicherplatzbedarf: $O(m \cdot n)$ + Platz für Suffixarrays
+          \end{itemize}
+      \end{itemize}
+  \end{itemize}
 \end{frame}
 
 \section{Implementation}
 
 \subsection{Our implementation}
+
+\begin{frame}{KSEARCHER}
+%  \begin{algorithmic}
+%    \Function{KSEARCHER}{query-proteins, database-proteins}
+%      \For{each query-protein} 
+%        \State calculate kmer-profile
+%        \State save kmer-profile in matrix
+%      \EndFor
+%      \For{each database-protein} 
+%    \EndFunction
+%  \end{algorithmic}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \begin{frame}{genometools}
 \end{frame}
