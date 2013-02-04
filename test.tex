@@ -13,9 +13,7 @@
 \title{Implementation of KSEARCH and SANS Algorithms in the genometools-environment}
 \date{\today}
 
-\begin{document}
-
-%\btBeginSubsection []
+\AtBeginSubsection []
  {
   \begin{frame} 
     \frametitle{Gliederung}
@@ -23,25 +21,20 @@
   \end{frame}
 }
 
-\titlepage
+\begin{document}
+
+%\titlepage
 %\end{frame}
 
+\maketitle
+
 \begin{frame}
-	\frametitle{Outline}
+	\frametitle{Gliederung}
 	\tableofcontents
 \end{frame}
 
-\section{Concept}
+\section{Konzept}
 
-%\begin{frame}{Sequence comparison}
-%  \begin{itemize}
-%    \item Determing similarity of sequences very important task in sequence analysis
-%    \item Most commonly used: BLAST
-%  \end{itemize}
-%\end{frame}
-%
-% dasselbe:
-%
 \begin{frame}{Sequenzvergleiche}
   \begin{itemize}
     \item Die Bestimmung von Ähnlichkeiten zwischen Sequenzen ist eine häufige Aufgabe bei der Sequenzanalyse 
@@ -49,7 +42,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Sequenzvergleiche}
+\begin{frame}{Sequenzvergleiche - Methoden}
   \begin{itemize}
     \item Alignmentbasierte Methoden
       \begin{itemize}
@@ -63,7 +56,7 @@
     \item Ranking mittels Feature-Vektoren
       \begin{itemize}
         \item USEARCH\\
-              - Flo?
+              - Vorsortieren der Datenbank nach Anzahlen gemeinsamer Teilwörter, Abbruch der Suche nach erstem Hit
         \item KSEARCH\\
               - bewertet Sequenzpaare aufgrund gemeinsamer k-mere
         \item SANS
@@ -72,25 +65,36 @@
   \end{itemize}
 \end{frame}
 
-\section{Algorithms}
+\section{Algorithmen}
+
+\subsection{Datenstrukturen}
+
+\begin{frame}{Suffixarrays}
+  \begin{itemize}
+    \item Enthalten alle Suffixe einer Sequenz in lexikographischer Ordnung
+  \end{itemize}
+  \begin{block}{Beispiel}
+    \begin{columns}
+      \column{.4\textwidth}
+        Sequenz = GYBLAAB\$
+      \scriptsize\column{.5\textwidth}
+        Suffixarray:\\
+        AAB\$\\
+        AB\$\\
+        BLAAB\$\\
+        B\$\\
+        GYBLAAB\$\\
+        LAAB\$\\
+        YBLAAB\$\\
+        \$\\
+      \normalsize
+    \end{columns}
+  \end{block}
+\end{frame}
 
 \subsection{KSEARCH}
 
-%\begin{frame}{Idea}
-%  \begin{itemize}
-%    \item Count frequencies of kmers in query sequence
-%    \item Compare to kmer frequencies of database entrys
-%  \end{itemize}
-%\end{frame}
-%
-%\begin{frame}{Analysis}
-%  \begin{itemize}
-%    \item Runtime:
-%    \item Space requirements:
-%  \end{itemize}
-%\end{frame}
-
-\begin{frame}{Scoring - Funktion}
+\begin{frame}{KSEARCH - Berechnen der Scores}
   \begin{equation*}
     KSEARCH(query,database) = \sum_{u \in \mathcal A^k} F(query,u) \cdot F(database,u)
   \end{equation*}  
@@ -128,9 +132,9 @@
       \end{itemize}
     \item Unsere Implementierung
       \begin{itemize}
-        \item Berechnung der KSEARCH-Scores mittels k-mer-Profilen
+        \item Berechnung der KSEARCH-Scores mittels k-mer-Profilen (hier kurz erläutern, was das ist!)
           \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ???
+            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ??? LAUFZEIT JETZT ANDERS!!!
             \item Speicherplatzbedarf: $O(|Anzahl Qprots| \cdot \mathcal A^k + Anzahl Qprots \cdot Anzahl Sprots)$
           \end{itemize}
       \end{itemize}
@@ -139,22 +143,14 @@
 
 
 \subsection{SANS}
-%\begin{frame}{Idea}
-%  \begin{itemize}
-%    \item Construct suffix tree for query sequence $q$
-%    \item Construct suffix tree for database sequences
-%    \item Merge suffix trees:
-%      \begin{itemize}
-%        \item for each suffix of $q$
-%      \end{itemize}
-%  \end{itemize}
-%\end{frame}
 
-\begin{frame}{Idee}
+\begin{frame}{SANS - Berechnen der Scores}
   \begin{itemize}
     \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben mit hoher Wahrscheinlichkeit gemeinsame Präfixe
     \item  SANS-Scores nutzen das aus, indem der Score aus den Positionen der Sequenzen im Suffixarray abgeleitet werden.
   \end{itemize}
+  
+  Beispielbild!
 %  \begin{figure}
 %        \includegraphics<1>[width=2cm,height=3.5cm]{First.eps}
 %        \includegraphics<2>[width=2cm,height=3.5cm]{Second.eps}
@@ -164,6 +160,8 @@
 \end{frame}
 
 \begin{frame}
+
+eventuell kann diese Folie raus. wenn nicht, Formel schöner machen!
   \begin{equation*}
     SANS(qprot,sprot) = \sum_{s=START[qprot]}^{START[qprot+1]-1} \sum_{i=-w}^{+w} id(sprot,SAP[ISA_{mapped}[s]+i]) 
   \end{equation*}
@@ -201,86 +199,96 @@
 
 \section{Implementation}
 
+\subsection{Genometools}
+
+\begin{frame}{Genometools}
+  \begin{itemize}
+    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
+    \begin{itemize}
+      \item encseq encode - ...
+      \item suffixerator -
+      \item kmer iterator -
+    \end{itemize}    
+  \end{itemize}
+\end{frame}
+
 \subsection{Our implementation}
 
-\begin{frame}{KSEARCHER}
-%  \begin{algorithmic}
-%    \Function{KSEARCHER}{query-proteins, database-proteins}
-%      \For{each query-protein} 
-%        \State calculate kmer-profile
-%        \State save kmer-profile in matrix
-%      \EndFor
-%      \For{each database-protein} 
-%    \EndFunction
-%  \end{algorithmic}
+\begin{frame}{KSEARCH}
+ \begin{algorithmic}
+   \Function{KSEARCH}{query-proteins, database-proteins}
+      \For{each database-protein d} 
+        \State calculate kmer-profile
+         \For{each query-protein q}
+           \State calculate kmer-profile
+           \State calculate KSEARCH(d,q) - score:
+           \State score = 0
+           \For{each possible kmer}
+             \State score calculation??
+           \EndFor
+         \State output KSEARCH(d,q) - score
+         \EndFor
+      \EndFor     
+    \EndFunction
+  \end{algorithmic}
 \end{frame}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\begin{frame}{genometools}
+\begin{frame}{Optimierungsmöglichkeiten KSEARCH}
+  \begin{itemize}
+    \item verkettete Liste. dadurch keine 2 geschachtelten for-schleifen\\
+          Zeitersparnis?
+  \end{itemize}
 \end{frame}
 
-\subsection{Comparison to developers implementation}
+\begin{frame}{SANS}
+ \begin{algorithmic}
+   \Function{SANS}{query proteins, database proteins}
+     \State calculate suffixarray for query proteins
+     \State calculate suffixarray for database proteins
+     \State initialize score matrix
+     \For{each suffix entry from 0 - query suffixarray.length}
+       \State find position in database suffixarray:
+       \State current position = 0
+       \For{i in current position - database suffixarray.length}
+         \If{suffix entry fits in at position i}
+           \State calculate scores for proteinpairs inside window  BESSER FORMULIEREN!
+           \State update score matrix 
+           \State current position = i
+         \EndIf
+       \EndFor
+     \EndFor
+    \EndFunction
+  \end{algorithmic} 
+\end{frame}
 
-\begin{frame}{}
+\begin{frame}{Optimierungsmöglichkeiten SANS}
+  \begin{itemize}
+    \item mergen der Suffixarrays statt for-schleifen.\\
+          Zeitersparnis?    
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Vergleich mit Koskinen \& Holm}
+
+hier nochmal? Folie von oben runter?? oder ist das schon der Analyseteil??
+
+wo kommt das mit den 1,2,3 bzw. 1,3,5 -repeats hin?
+\end{frame}
+
+\begin{frame}{Laufzeiten}
+  \begin{itemize}
+    \item 1000 Rattus rattus Proteine gegen Swissprot-Datenbank
+  \end{itemize}
+  \begin{tabular}{l|ccccc}
+    & Holm SANS & ZBH SANS & Holm KSEARCH & ZBH KSEARCH & BLAST\\
+    \hline
+    Index-Erstellung & & & & & \\
+             Scoring & & & & & \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Spezifität}
+  Hier kommt eine Grafik wie die im Paper hin.
 \end{frame}
 
 \end{document}
