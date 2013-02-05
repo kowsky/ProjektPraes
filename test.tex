@@ -10,7 +10,7 @@
 \setbeamercolor{block title}{bg=blue}
 
 \author{Meike Bruns, Florian Markowsky, Michael Spohn}
-\title{Implementation of KSEARCH and SANS Algorithms in the genometools-environment}
+\title{Proteinsequenz-Vergleich mit KSEARCH und SANS}
 \date{\today}
 
 \AtBeginSubsection []
@@ -39,6 +39,7 @@
   \begin{itemize}
     \item Die Bestimmung von Ähnlichkeiten zwischen Sequenzen ist eine häufige Aufgabe bei der Sequenzanalyse 
     \item Exakte Sequenzvergleiche sind oft zu zeitaufwändig
+    \item Bei Proteinsequenzen sind auf exakten Matches basierende Vergleiche umstritten
   \end{itemize}
 \end{frame}
 
@@ -66,6 +67,31 @@
 \end{frame}
 
 \section{Algorithmen}
+
+\subsection{Software Architektur}
+
+\begin{frame}{Genometools}
+  \begin{itemize}
+    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
+    \begin{itemize}
+      \item encseq encode - ...
+      \item suffixerator -
+      \item kmer iterator -
+    \end{itemize}    
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Seqscore Toolbox}
+  hier kommt die grafik mit der toolbox-struktur hin
+\end{frame}
+
+\begin{frame}{bla\_seqscore.c}
+  hier kommt dir grafik mit der seqscore.c struktur hin: konstruktoren + berechnungsfunktionen
+\end{frame}
+
+\begin{frame}{Berechnungs-Aufruf}
+  hier kommt die grafir mit dem berechnungs-aufruf hin: auf ruf der funktion mit callback, befuellen der ergebnis-struktur mit eben dieser
+\end{frame}
 
 \subsection{Datenstrukturen}
 
@@ -120,100 +146,6 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Implementierungsansatz und Analyse}
-  \begin{itemize}
-    \item Koskinen \& Holm
-      \begin{itemize}
-        \item Berechnung des KSEARCH-Scores mittels Suffixarrays:
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|*|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf:
-          \end{itemize}
-      \end{itemize}
-    \item Unsere Implementierung
-      \begin{itemize}
-        \item Berechnung der KSEARCH-Scores mittels k-mer-Profilen (hier kurz erläutern, was das ist!)
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ??? LAUFZEIT JETZT ANDERS!!!
-            \item Speicherplatzbedarf: $O(|Anzahl Qprots| \cdot \mathcal A^k + Anzahl Qprots \cdot Anzahl Sprots)$
-          \end{itemize}
-      \end{itemize}
-  \end{itemize}
-\end{frame}
-
-
-\subsection{SANS}
-
-\begin{frame}{SANS - Berechnen der Scores}
-  \begin{itemize}
-    \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben mit hoher Wahrscheinlichkeit gemeinsame Präfixe
-    \item  SANS-Scores nutzen das aus, indem der Score aus den Positionen der Sequenzen im Suffixarray abgeleitet werden.
-  \end{itemize}
-  
-  Beispielbild!
-%  \begin{figure}
-%        \includegraphics<1>[width=2cm,height=3.5cm]{First.eps}
-%        \includegraphics<2>[width=2cm,height=3.5cm]{Second.eps}
-%        \caption<1>{\only<1>{First Image}\only<2>{Second Image}}
-%        %\caption<2>{Second Image}
-%    \end{figure} 
-\end{frame}
-
-\begin{frame}
-
-eventuell kann diese Folie raus. wenn nicht, Formel schöner machen!
-  \begin{equation*}
-    SANS(qprot,sprot) = \sum_{s=START[qprot]}^{START[qprot+1]-1} \sum_{i=-w}^{+w} id(sprot,SAP[ISA_{mapped}[s]+i]) 
-  \end{equation*}
-
-  Mit der Identitätsfunktion
-
-  \begin{equation*}
-    id(a,b)=\begin{cases}
-      1, & if~a=b\\
-      0, & if~a\ne b\\
-    \end{cases}
-  \end{equation*}
-\end{frame}
-
-\begin{frame}{Implementierungsansatz und Analyse}
-  \begin{itemize}
-    \item Koskinen \& Holm
-      \begin{itemize}
-        \item Ermitteln der Positionen durch Mergen der Suffixarrays
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf:
-          \end{itemize}
-      \end{itemize}
-    \item Unsere Implementierung
-      \begin{itemize}
-        \item Ermitteln der Positionen durch for-Schleifen
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf: $O(m \cdot n)$ + Platz für Suffixarrays
-          \end{itemize}
-      \end{itemize}
-  \end{itemize}
-\end{frame}
-
-\section{Implementation}
-
-\subsection{Genometools}
-
-\begin{frame}{Genometools}
-  \begin{itemize}
-    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
-    \begin{itemize}
-      \item encseq encode - ...
-      \item suffixerator -
-      \item kmer iterator -
-    \end{itemize}    
-  \end{itemize}
-\end{frame}
-
-\subsection{Our implementation}
-
 \begin{frame}{KSEARCH}
  \begin{algorithmic}
    \Function{KSEARCH}{query-proteins, database-proteins}
@@ -233,11 +165,50 @@ eventuell kann diese Folie raus. wenn nicht, Formel schöner machen!
   \end{algorithmic}
 \end{frame}
 
-\begin{frame}{Optimierungsmöglichkeiten KSEARCH}
+\begin{frame}{Implementierungsansatz und Analyse}
+  \begin{itemize}
+    \item Koskinen \& Holm
+      \begin{itemize}
+        \item Berechnung des KSEARCH-Scores mittels Suffixarrays:
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|*|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
+            \item Speicherplatzbedarf:
+          \end{itemize}
+      \end{itemize}
+    \item Unsere Implementierung:
+      \begin{itemize}
+        \item Berechnung der KSEARCH-Scores mittels gehashter k-mer-Profilen (hier kurz erläutern, was das ist!)
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ??? LAUFZEIT JETZT ANDERS!!!
+            \item Speicherplatzbedarf: $O(|Anzahl Qprots| \cdot \mathcal A^k + Anzahl Qprots \cdot Anzahl Sprots)$
+          \end{itemize}
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Optimierungsmöglichkeiten/Probleme KSEARCH}
   \begin{itemize}
     \item verkettete Liste. dadurch keine 2 geschachtelten for-schleifen\\
           Zeitersparnis?
+    \item Zu hoher Speicherbedarf durch Matrix
   \end{itemize}
+\end{frame}
+
+\subsection{SANS}
+
+\begin{frame}{SANS - Berechnen der Scores}
+  \begin{itemize}
+    \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben mit hoher Wahrscheinlichkeit gemeinsame Präfixe
+    \item  SANS-Scores nutzen das aus, indem der Score aus den Positionen der Sequenzen im Suffixarray abgeleitet werden.
+  \end{itemize}
+  
+  Beispielbild!
+%  \begin{figure}
+%        \includegraphics<1>[width=2cm,height=3.5cm]{First.eps}
+%        \includegraphics<2>[width=2cm,height=3.5cm]{Second.eps}
+%        \caption<1>{\only<1>{First Image}\only<2>{Second Image}}
+%        %\caption<2>{Second Image}
+%    \end{figure} 
 \end{frame}
 
 \begin{frame}{SANS}
@@ -268,27 +239,52 @@ eventuell kann diese Folie raus. wenn nicht, Formel schöner machen!
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Vergleich mit Koskinen \& Holm}
-
-hier nochmal? Folie von oben runter?? oder ist das schon der Analyseteil??
-
-wo kommt das mit den 1,2,3 bzw. 1,3,5 -repeats hin?
+\begin{frame}{Implementierungsansatz und Analyse}
+  \begin{itemize}
+    \item Koskinen \& Holm
+      \begin{itemize}
+        \item Ermitteln der Positionen durch Mergen der Suffixarrays
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
+            \item Speicherplatzbedarf:
+          \end{itemize}
+      \end{itemize}
+    \item Unsere Implementierung
+      \begin{itemize}
+        \item Ermitteln der Positionen durch for-Schleifen
+          \begin{itemize}
+            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + Konstruktion der Suffixarrays
+            \item Speicherplatzbedarf: $O(m \cdot n)$ + Platz für Suffixarrays
+          \end{itemize}
+      \end{itemize}
+  \end{itemize}
 \end{frame}
+
+\section{Auswertung}
+  \begin{frame} 
+    \frametitle{Gliederung}
+    \tableofcontents[currentsection]
+  \end{frame}
 
 \begin{frame}{Laufzeiten}
   \begin{itemize}
-    \item 1000 Rattus rattus Proteine gegen Swissprot-Datenbank
+    \item Query: 1083 Rattus rattus Proteine von NCBI \tiny{\url{http://www.ncbi.nlm.nih.gov/protein}}
+    \item \normalsize{Database: Swissprot-Datenbank} \tiny{\url{http://www.uniprot.org/downloads}}
   \end{itemize}
-  \begin{tabular}{l|ccccc}
-    & Holm SANS & ZBH SANS & Holm KSEARCH & ZBH KSEARCH & BLAST\\
+  \begin{tabular}{l|cccc}
+    & Holm SANS & ZBH SANS & Holm KSEARCH & ZBH KSEARCH \\
     \hline
-    Index-Erstellung & & & & & \\
-             Scoring & & & & & \\
+    Indexing & & & & \\
+       Suche & & & & \\
   \end{tabular}
 \end{frame}
 
-\begin{frame}{Spezifität}
-  Hier kommt eine Grafik wie die im Paper hin.
+\begin{frame}{Sensitivitaet}
+  Hier kommt eine Sensitivity-Grafik wie die im Paper hin.
+\end{frame}
+
+\begin{frame}{AUC}
+  Hier kommt eine AUC-Grafik hin
 \end{frame}
 
 \end{document}
