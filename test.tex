@@ -68,31 +68,6 @@
 
 \section{Algorithmen}
 
-\subsection{Software Architektur}
-
-\begin{frame}{Genometools}
-  \begin{itemize}
-    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
-    \begin{itemize}
-      \item encseq - effizienter Datentyp für Sequenzen
-      \item suffixerator - Tool zur Berechnung von Suffixarrays aus Sequenz-Dateien oder encseqs
-      \item kmer iterator - Klasse zur Iteration über kmere von encseqs
-    \end{itemize}    
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Seqscore Toolbox}
-  \includegraphics[width=\linewidth, t]{img/dia1.png}
-\end{frame}
-
-\begin{frame}{bla\_seqscore.c}
-  \includegraphics[width=\linewidth, t]{img/dia2.png}
-\end{frame}
-
-\begin{frame}{Berechnungs-Aufruf}
-  \includegraphics[width=\linewidth, t]{img/dia3.png}
-\end{frame}
-
 \subsection{Datenstrukturen}
 
 \begin{frame}{Suffixarrays}
@@ -203,6 +178,7 @@
   \begin{itemize}
     \item k-mer Profile zunächst als Matrix gespeichert: zu hoher Speicherbedarf
     \item Implementierung mit doppelter For-Schleife: zu hohe Laufzeit
+    \item Lösung: hashing von vorhandenen kmeren
   \end{itemize}
 \end{frame}
 
@@ -284,6 +260,31 @@
   \end{itemize}
 \end{frame}
 
+\subsection{Software Architektur}
+
+\begin{frame}{Genometools}
+  \begin{itemize}
+    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
+    \begin{itemize}
+      \item encseq - effizienter Datentyp für Sequenzen
+      \item suffixerator - Tool zur Berechnung von Suffixarrays aus Sequenz-Dateien oder encseqs
+      \item kmer iterator - Klasse zur Iteration über kmere von encseqs
+    \end{itemize}    
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Seqscore Toolbox}
+  \includegraphics[width=\linewidth, t]{img/dia1.png}
+\end{frame}
+
+\begin{frame}{bla\_seqscore.c}
+  \includegraphics[width=\linewidth, t]{img/dia2.png}
+\end{frame}
+
+\begin{frame}{Berechnungs-Aufruf}
+  \includegraphics[width=\linewidth, t]{img/dia3.png}
+\end{frame}
+
 \section{Auswertung}
   \begin{frame} 
     \frametitle{Gliederung}
@@ -298,10 +299,10 @@
   \begin{tabular}{l|cc}
     Algorithmus & Indexing & Suche \\
     \hline
-    KSEARCH Holms k6 & 1m15s, 0m14s  & 0m14s \\
+    KSEARCH Holms k6 & 1m29s & 0m14s \\
     KSEARCH MMF k6 & -  & 511m53s \\
-     SANS Holms h16 & 1m15s, 0m14s &  0m15s \\
-       SANS MMF  h16 & 14m16s, 0m3s & 0m36s \\
+     SANS Holms h16 & 1m29s &  0m15s \\
+       SANS MMF  h16 & 14m19s & 0m36s \\
   \end{tabular}
 \end{frame}
 
