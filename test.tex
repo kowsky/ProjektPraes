@@ -106,19 +106,22 @@
 \begin{frame}{Rot-Schwarz-Bäume}
   \begin{itemize}
     \item Binäre Bäume
-    \item Durch rot-schwarz-Eigenschaften balanciert
-    \item Ermöglichen schnellen Zugriff auf sortierte Daten
+    \item Durch rot-schwarz-Eigenschaften balanciert:
+      \begin{itemize}
+        \item Knoten sind rot oder schwarz, die Wurzel ist immer schwarz
+        \item Jeder Pfad von einem Knoten x zu einem Blatt enthält die gleiche Anzahl schwarzer 
+        Knoten
+        \item Es folgen keine 2 roten Knoten aufeinander  
+      \end{itemize}
+    \item Ermöglichen schnelles Einfügen und Suchen auf sortierten Daten
   \end{itemize}
-%    \begin{figure}
-%      \includegraphics[width=.5\textwidth]{BILD}
-%    \end{figure}
 \end{frame}
 
 \subsection{KSEARCH}
 
 \begin{frame}{KSEARCH - Berechnen der Scores}
   \begin{equation*}
-    KSEARCH(query,database) = \sum_{u \in \mathcal A^k} F(query,u) \cdot F(database,u) NOTATION AUS GSA!!
+    KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(database)(w)
   \end{equation*}  
   \begin{block}{Beispiel}
     \begin{columns}
