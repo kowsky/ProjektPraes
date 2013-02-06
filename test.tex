@@ -76,9 +76,9 @@
   \begin{itemize}
     \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
     \begin{itemize}
-      \item encseq encode - ...
-      \item suffixerator -
-      \item kmer iterator -
+      \item encseq - effizienter Datentyp für Sequenzen
+      \item suffixerator - Tool zur Berechnung von Suffixarrays aus Sequenz-Dateien oder encseqs
+      \item kmer iterator - Klasse zur Iteration über kmere von encseqs
     \end{itemize}    
   \end{itemize}
 \end{frame}
@@ -163,13 +163,13 @@
  \begin{algorithmic}
    \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
       \For{each query-protein $q$} 
-        \State calculate kmer-profile \# $O(|q|)$
+        \State calculate kmer-profile \Comment $O(|q|)$
         \State store kmer-profile in hashtable
       \EndFor \Comment $O(|q_0..q_i|)$
        \For{each database-protein $d$}
-         \State calculate kmer-profile  \# $O(|d|)$
+         \State calculate kmer-profile  \Comment $O(|d|)$
          \For{i in $q_0..q_n$}
-           \State calculate $KSEARCH(d,q_{i})$ \# $O(kVariety(d))$   
+           \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
            \State output $KSEARCH(d,q)$ - score
          \EndFor
        \EndFor   \Comment $O(|d_0..d_i| \cdot ??? )$  
@@ -289,11 +289,13 @@
     \item Query: 1083 Rattus rattus Proteine von NCBI \tiny{\url{http://www.ncbi.nlm.nih.gov/protein}}
     \item \normalsize{Database: Swissprot-Datenbank} \tiny{\url{http://www.uniprot.org/downloads}}
   \end{itemize}
-  \begin{tabular}{l|cccc}
-    & Holm SANS & ZBH SANS & Holm KSEARCH & ZBH KSEARCH \\
+  \begin{tabular}{l|cc}
+    Algorithmus & Indexing & Suche \\
     \hline
-    Indexing & & & & \\
-       Suche & & & & \\
+    KSEARCH Holms k6 & 1m15s, 0m14s  & 0m14s \\
+    KSEARCH MMF k6 & -  & 511m53s \\
+     SANS Holms h16 & 1m15s, 0m14s &  0m15s \\
+       SANS MMF  h16 & 14m16s, 0m3s & 0m36s \\
   \end{tabular}
 \end{frame}
 
