@@ -25,8 +25,8 @@
 
 \begin{document}
 
-%\titlepage
-%\end{frame}
+\titlepage
+
 
 \maketitle
 
@@ -49,22 +49,23 @@
     \item Alignmentbasierte Methoden
       \begin{itemize}
         \item SSEARCH\\
-              - ermittelt optimale lokale Alignments mittels Smith-Waterman-Algorithmus
-        \item FASTA\\
-              - verbindet HotSpots zu approximativen Alignments
-        \item BLAST\\
-              - erweitert Hits zu Maximum Segment Pairs
-      \end{itemize}
-    \item Ranking mittels Feature-Vektoren
+              \scriptsize ermittelt optimale lokale Alignments mittels Smith-Waterman-Algorithmus                 
+        \item \normalsize FASTA\\
+              \scriptsize verbindet HotSpots zu approximativen Alignments            
+        \item \normalsize BLAST\\
+              \scriptsize erweitert Hits zu Maximum Segment Pairs
+       \end{itemize}
+    \item \normalsize Ranking mittels Feature-Vektoren
       \begin{itemize}
         \item USEARCH\\
-              - Vorsortieren der Datenbank nach Anzahlen gemeinsamer Teilwörter, Abbruch der Suche nach erstem Hit
-        \item KSEARCH\\
-              - bewertet Sequenzpaare aufgrund gemeinsamer k-mere
-        \item SANS
-              - bewertet Sequenzpaare aufgrund potentieller gemeinsamer Substrings
+              \scriptsize Vorsortieren der Datenbank nach Anzahlen gemeinsamer Teilwörter, Abbruch der Suche nach erstem    Hit
+
+        \item \normalsize KSEARCH \\
+              \scriptsize bewertet Sequenzpaare aufgrund gemeinsamer k-mere
+        \item \normalsize SANS\\
+              \scriptsize bewertet Sequenzpaare aufgrund gemeinsamer Substrings
       \end{itemize}
-      \item Aufgrund interesting similarities extend higher levels of mismathches sind Proteinanalysen mit suffixarrays nicht so verbreitet
+%      \item Aufgrund interesting similarities extend higher levels of mismathches sind Proteinanalysen mit suffixarrays nicht so verbreitet
   \end{itemize}
 \end{frame}
 
@@ -162,18 +163,19 @@
 \begin{frame}{KSEARCH}
  \begin{algorithmic}
    \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
-      \For{each query-protein $q$} 
+      \For{each query-protein $q$}  
         \State calculate kmer-profile \Comment $O(|q|)$
         \State store kmer-profile in hashtable
-      \EndFor \Comment $O(|q_0..q_i|)$
-       \For{each database-protein $d$}
-         \State calculate kmer-profile  \Comment $O(|d|)$
-         \For{i in $q_0..q_n$}
+      \EndFor \Comment $\boldsymbol{O(|q_0..q_n|)}$
+       \For{each database-protein $d$} 
+         \State calculate kmer-profile \Comment $O(|d|)$
+         \For{i in $Q$}
            \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
-           \State output $KSEARCH(d,q)$ - score
-         \EndFor
-       \EndFor   \Comment $O(|d_0..d_i| \cdot ??? )$  
-    \EndFunction
+           \State output $KSEARCH(d,q)$
+         \EndFor \Comment $\boldsymbol{ O(|Q| \cdot kVariety(d))}$
+       \EndFor   \Comment $\boldsymbol{O(|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
+    \EndFunction \Comment overall time complexity: $\boldsymbol{O(|q_0..q_n|+|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+
   \end{algorithmic}
 \end{frame}
 
@@ -183,16 +185,20 @@
       \begin{itemize}
         \item Berechnung des KSEARCH-Scores mittels Suffixarrays
       \end{itemize}
-    \item MMM
+    \item MMF
       \begin{itemize}
-        \item Berechnung der KSEARCH-Scores mittels gehashter k-mer-Profilen
+        \item Berechnung der KSEARCH-Scores mittels gehashter k-mer-Profile
       \end{itemize}
     \end{itemize}
     
-  \begin{tabular}{lcc}
-     & Koskinen \& Holm & MMM\\
-    Laufzeitkomplexität & $O(|d_0..d_n| \cdot |q_0..q_n|)$ & $O(|TXT|+|TXTQ| + Num(Q)*Num(D)*kVariety(...)$\\
-%    Speicherplatzbedarf & keine Angabe & $O(Num(Q)\cdotNum(D)+Num(Q)\cdotkVariety(q))$
+  \begin{tabular}{|l|c|c|}
+     \hline
+     & Koskinen \& Holm & MMF\\ 
+     \hline
+    Laufzeitkomplexität & $O(|d_0..d_n| \cdot |q_0..q_n|)$ & $O(|q_0..q_n|+|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))$\\
+    \hline
+    Speicherplatzbedarf & keine Angabe & $O(|Q| \cdot |D|+ |Q| \cdot kVariety(q))$ \\
+    \hline
   \end{tabular}
 \end{frame}
 
@@ -222,9 +228,9 @@
 
 \begin{frame}{SANS}
  \begin{algorithmic}
-   \Function{SANS}{query proteins $Q$, database proteins $D$, windowsize $h$}
-     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_0..d_i|)$
-     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_0..q_i|)$
+   \Function{SANS}{$query proteins Q, database proteins D, windowsize h$}
+     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_0..d_n|)$
+     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_0..q_n|)$
      \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
      \State initialize $position = 0$
      \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
@@ -232,9 +238,9 @@
        \State shift $2h$ window over $position$ 
        \For{each $suffix_{dx}$ in window}
          \State update SANS-scores for  $(q_x,d_x)$
-       \EndFor
-     \EndFor \Comment $O(|q_0..q_i|\cdot2h + |d_0..d_i|)$ besser verteilen?
-    \EndFunction  \Comment overall time complexity: $O(|q_0..q_i|\cdot2h + |d_0..d_i|+|Q|\cdot|D|)$ 2h raus?
+       \EndFor \Comment $\boldsymbol{O(2h)}$
+     \EndFor \Comment $\boldsymbol{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
+    \EndFunction  \Comment overall time complexity: $\boldsymbol{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$ 
   \end{algorithmic}
 \end{frame}
 
@@ -242,7 +248,7 @@
   \begin{algorithmic}
     \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
       \For{$i$ in $position$..$suffixarray_D$.length}
-        \If{$suffix$ fits in $i$}
+        \If{$suffix$ fits in $suffixarrax_D[i]$}
           \State return $i$ 
         \EndIf
       \EndFor 
