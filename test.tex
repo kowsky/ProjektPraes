@@ -58,15 +58,25 @@
               \scriptsize Vorsortieren der Datenbank nach Anzahlen gemeinsamer Substrings, Abbruch der Suche nach erstem    Hit
 
         \item \normalsize KSEARCH \\
-              \scriptsize bewertet Sequenzpaare aufgrund gemeinsamer k-mere
+              \scriptsize Bewertet Sequenzpaare aufgrund gemeinsamer k-mere
         \item \normalsize SANS\\
-              \scriptsize bewertet Sequenzpaare aufgrund gemeinsamer Substrings
+              \scriptsize Bewertet Sequenzpaare aufgrund gemeinsamer Substrings
       \end{itemize}
 %      \item Aufgrund interesting similarities extend higher levels of mismathches sind Proteinanalysen mit suffixarrays nicht so verbreitet
   \end{itemize}
 \end{frame}
 
-\section{Algorithmen}
+\begin{frame}{SANS \& KSEARCH}
+  \begin{itemize}
+    \item Entwickelt von J. Patrik Koskinen \& Liisa Holm
+    \item Paper: "SANS: high-throughput retrieval of protein sequences allowing 50\% mismatches" 
+    \item Suffixarray-basierte Methoden zur Sequenzähnlichkeitsanalyse von Proteinen
+    \item Koskinen \& Holm finden für ihre Tools eine mit Blast vergleichbare Sensitivität für Proteinpaare mit 50-100\% Sequenzidentität
+    \item Tools zum Download unter 
+  \end{itemize}
+\end{frame}
+
+\section{Algorithmen \& Implementierung}
 
 \subsection{Datenstrukturen}
 
@@ -91,6 +101,17 @@
       \normalsize
     \end{columns}
   \end{block}
+\end{frame}
+
+\begin{frame}{Rot-Schwarz-Bäume}
+  \begin{itemize}
+    \item Binäre Bäume
+    \item Durch rot-schwarz-Eigenschaften balanciert
+    \item Ermöglichen schnellen Zugriff auf sortierte Daten
+  \end{itemize}
+%    \begin{figure}
+%      \includegraphics[width=.5\textwidth]{BILD}
+%    \end{figure}
 \end{frame}
 
 \subsection{KSEARCH}
@@ -264,12 +285,35 @@
 
 \begin{frame}{Genometools}
   \begin{itemize}
-    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools nutzen:
+
+    \item Wir implementieren in der Softwareumgebung Genometools, aus der wir eine Anzahl an Tools und Klassen nutzen:
     \begin{itemize}
-      \item encseq - effizienter Datentyp für Sequenzen
+      \item encseq encode - Tool zum codieren von Sequenzen 
       \item suffixerator - Tool zur Berechnung von Suffixarrays aus Sequenz-Dateien oder encseqs
+      \item encseq - effizienter Datentyp für Sequenzen
       \item kmer iterator - Klasse zur Iteration über kmere von encseqs
+      \item hashmap - Klasse zum Anlegen von Hashes
+      \item ranked list - Rot-Schwarz-Baum basierte Liste
+
     \end{itemize}    
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ausgabemöglichkeiten von KSEARCH \& SANS}
+  \begin{itemize}
+    \item -matrix 
+      \begin{itemize}
+        \item Gibt alle Scores aus
+      \end{itemize}           
+    \item -threshold x 
+      \begin{itemize}
+        \item  Gibt alle Scores über einem Threshold x aus
+      \end{itemize}
+    \item -nbest x
+      \begin{itemize}
+        \item  Gibt die x besten Scores aus
+      \end{itemize} 
   \end{itemize}
 \end{frame}
 
