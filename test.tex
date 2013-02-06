@@ -25,9 +25,6 @@
 
 \begin{document}
 
-\titlepage
-
-
 \maketitle
 
 \begin{frame}
@@ -256,31 +253,32 @@
   \end{algorithmic} 
 \end{frame}
 
-\begin{frame}{Optimierungsmöglichkeiten SANS}
-  \begin{itemize}
-    \item mergen der Suffixarrays statt for-schleifen.\\
-          Zeitersparnis?    
-  \end{itemize}
-\end{frame}
-
 \begin{frame}{Implementierungsansatz und Analyse}
   \begin{itemize}
     \item Koskinen \& Holm
       \begin{itemize}
         \item Ermitteln der Positionen durch Mergen der Suffixarrays
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf:
-          \end{itemize}
       \end{itemize}
     \item Unsere Implementierung
       \begin{itemize}
         \item Ermitteln der Positionen durch for-Schleifen
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|)$ + Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf: $O(m \cdot n)$ + Platz für Suffixarrays
-          \end{itemize}
       \end{itemize}
+  \end{itemize}
+    \begin{tabular}{|l|c|c|}
+     \hline
+     & Koskinen \& Holm & MMF\\ 
+     \hline
+    Laufzeitkomplexität & $O(|d_0..d_n| + |q_0..q_n|)$ & $O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)$\\
+    \hline
+    Speicherplatzbedarf & keine Angabe & $O(|Q| \cdot |D|+|d_0..d_n| + |q_0..q_n|))$ \\
+    \hline
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Optimierungsmöglichkeiten SANS}
+  \begin{itemize}
+    \item Mergen der Suffixarrays statt for-schleifen:\\
+          Speicherplatzersparnis: Statt der gesamten Suffixarrays nur den window-Bereich im Arbeitsspeicher vorhalten    
   \end{itemize}
 \end{frame}
 
