@@ -1,14 +1,16 @@
-\documentclass[aspectratio=1610]{beamer}
+\documentclass[xcolor=dvipsnames, aspectratio=1610]{beamer}
 
 \usetheme[1610]{ZBH}
 \usepackage{graphicx}
-\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
 \usepackage{numprint}
 \usepackage[utf8]{inputenc}
 
-\setbeamercolor{block body}{bg=lightgray}
-\setbeamercolor{block title}{bg=blue}
-
+\definecolor{greyish}{rgb}{224,224,224}
+\setbeamertemplate{blocks}[rounded]
+\setbeamercolor{block title}{fg=white,bg=MidnightBlue}
+\setbeamercolor{block body}{fg=black,bg=lightgray!50}
+       
 \author{Meike Bruns, Florian Markowsky, Michael Spohn}
 \title{Proteinsequenz-Vergleich mit KSEARCH und SANS}
 \date{\today}
@@ -38,8 +40,7 @@
 \begin{frame}{Sequenzvergleiche}
   \begin{itemize}
     \item Die Bestimmung von Ähnlichkeiten zwischen Sequenzen ist eine häufige Aufgabe bei der Sequenzanalyse 
-    \item Exakte Sequenzvergleiche sind oft zu zeitaufwändig
-    \item Bei Proteinsequenzen sind auf exakten Matches basierende Vergleiche umstritten
+    \item Exakte Sequenzvergleiche sind oft zu zeitaufwändig 
   \end{itemize}
 \end{frame}
 
@@ -63,6 +64,7 @@
         \item SANS
               - bewertet Sequenzpaare aufgrund potentieller gemeinsamer Substrings
       \end{itemize}
+      \item Aufgrund interesting similarities extend higher levels of mismathches sind Proteinanalysen mit suffixarrays nicht so verbreitet
   \end{itemize}
 \end{frame}
 
@@ -122,7 +124,7 @@
 
 \begin{frame}{KSEARCH - Berechnen der Scores}
   \begin{equation*}
-    KSEARCH(query,database) = \sum_{u \in \mathcal A^k} F(query,u) \cdot F(database,u)
+    KSEARCH(query,database) = \sum_{u \in \mathcal A^k} F(query,u) \cdot F(database,u) NOTATION AUS GSA!!
   \end{equation*}  
   \begin{block}{Beispiel}
     \begin{columns}
@@ -146,21 +148,31 @@
   \end{block}
 \end{frame}
 
+\begin{frame}{Notation}
+  \begin{itemize}
+    \item $Q$ bzw. $D$ - Menge der Query- bzw. Datenbank-Proteine
+    \item $q$ bzw. $d$ - ein Query- bzw. Datenbank-Protein
+    \item $|Q|$ bzw. $|D|$- Anzahl der Query- bzw. Datenbank-Proteine
+    \item $|q|$ bzw. $|d|$ - Länge eines Query- bzw. Datenbank-Proteins
+    \item $|q_0..q_n|$ bzw. $|d_0..d_n|$ - Länge aller konkatenierten Query- bzw. Datenbank-Proteine
+    \item $kVariety(q)$ bzw. $kVariety(d)$ - Anzahl untersciedlicher kmere in einem Query- bzw. Datenbank-Protein
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{KSEARCH}
  \begin{algorithmic}
-   \Function{KSEARCH}{query-proteins, database-proteins}
-      \For{each database-protein d} 
-        \State calculate kmer-profile
-         \For{each query-protein q}
-           \State calculate kmer-profile
-           \State calculate KSEARCH(d,q) - score:
-           \State score = 0
-           \For{each possible kmer}
-             \State score calculation??
-           \EndFor
-         \State output KSEARCH(d,q) - score
+   \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
+      \For{each query-protein $q$} 
+        \State calculate kmer-profile \# $O(|q|)$
+        \State store kmer-profile in hashtable
+      \EndFor \Comment $O(|q_0..q_i|)$
+       \For{each database-protein $d$}
+         \State calculate kmer-profile  \# $O(|d|)$
+         \For{i in $q_0..q_n$}
+           \State calculate $KSEARCH(d,q_{i})$ \# $O(kVariety(d))$   
+           \State output $KSEARCH(d,q)$ - score
          \EndFor
-      \EndFor     
+       \EndFor   \Comment $O(|d_0..d_i| \cdot ??? )$  
     \EndFunction
   \end{algorithmic}
 \end{frame}
@@ -169,28 +181,25 @@
   \begin{itemize}
     \item Koskinen \& Holm
       \begin{itemize}
-        \item Berechnung des KSEARCH-Scores mittels Suffixarrays:
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|*|TXT_Q|)$ + lineare Konstruktion der Suffixarrays
-            \item Speicherplatzbedarf:
-          \end{itemize}
+        \item Berechnung des KSEARCH-Scores mittels Suffixarrays
       \end{itemize}
-    \item Unsere Implementierung:
+    \item MMM
       \begin{itemize}
-        \item Berechnung der KSEARCH-Scores mittels gehashter k-mer-Profilen (hier kurz erläutern, was das ist!)
-          \begin{itemize}
-            \item Laufzeit: $O(|TXT|+|TXT_Q|+(m+n) \cdot |\mathcal A^k|+ Anzahl Qprots \cdot Anzahl Sprots \cdot 1)$ ??? LAUFZEIT JETZT ANDERS!!!
-            \item Speicherplatzbedarf: $O(|Anzahl Qprots| \cdot \mathcal A^k + Anzahl Qprots \cdot Anzahl Sprots)$
-          \end{itemize}
+        \item Berechnung der KSEARCH-Scores mittels gehashter k-mer-Profilen
       \end{itemize}
-  \end{itemize}
+    \end{itemize}
+    
+  \begin{tabular}{lcc}
+     & Koskinen \& Holm & MMM\\
+    Laufzeitkomplexität & $O(|d_0..d_n| \cdot |q_0..q_n|)$ & $O(|TXT|+|TXTQ| + Num(Q)*Num(D)*kVariety(...)$\\
+%    Speicherplatzbedarf & keine Angabe & $O(Num(Q)\cdotNum(D)+Num(Q)\cdotkVariety(q))$
+  \end{tabular}
 \end{frame}
 
 \begin{frame}{Optimierungsmöglichkeiten/Probleme KSEARCH}
   \begin{itemize}
-    \item verkettete Liste. dadurch keine 2 geschachtelten for-schleifen\\
-          Zeitersparnis?
-    \item Zu hoher Speicherbedarf durch Matrix
+    \item k-mer Profile zunächst als Matrix gespeichert: zu hoher Speicherbedarf
+    \item Implementierung mit doppelter For-Schleife: zu hohe Laufzeit
   \end{itemize}
 \end{frame}
 
@@ -198,8 +207,8 @@
 
 \begin{frame}{SANS - Berechnen der Scores}
   \begin{itemize}
-    \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben mit hoher Wahrscheinlichkeit gemeinsame Präfixe
-    \item  SANS-Scores nutzen das aus, indem der Score aus den Positionen der Sequenzen im Suffixarray abgeleitet werden.
+    \item Substrings von Sequenzen, die im Suffixarray nebeneinander liegen, haben typischerweise lange gemeinsame Präfixe
+    \item  SANS-Scores bewerten Proteinpaare aufgrund von Nachbarschaften im Suffixarray
   \end{itemize}
   
   Beispielbild!
@@ -213,21 +222,30 @@
 
 \begin{frame}{SANS}
  \begin{algorithmic}
-   \Function{SANS}{query proteins, database proteins}
-     \State calculate suffixarray for query proteins
-     \State calculate suffixarray for database proteins
-     \State initialize score matrix
-     \For{each suffix entry from 0 - query suffixarray.length}
-       \State find position in database suffixarray:
-       \State current position = 0
-       \For{i in current position - database suffixarray.length}
-         \If{suffix entry fits in at position i}
-           \State calculate scores for proteinpairs inside window  BESSER FORMULIEREN!
-           \State update score matrix 
-           \State current position = i
-         \EndIf
+   \Function{SANS}{query proteins $Q$, database proteins $D$, windowsize $h$}
+     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_0..d_i|)$
+     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_0..q_i|)$
+     \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
+     \State initialize $position = 0$
+     \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
+       \State  $position$ = \Call {findPosition}{$suffix$, $suffixarray_D$, $position$} 
+       \State shift $2h$ window over $position$ 
+       \For{each $suffix_{dx}$ in window}
+         \State update SANS-scores for  $(q_x,d_x)$
        \EndFor
-     \EndFor
+     \EndFor \Comment $O(|q_0..q_i|\cdot2h + |d_0..d_i|)$ besser verteilen?
+    \EndFunction  \Comment overall time complexity: $O(|q_0..q_i|\cdot2h + |d_0..d_i|+|Q|\cdot|D|)$ 2h raus?
+  \end{algorithmic}
+\end{frame}
+
+\begin{frame}{findPosition}
+  \begin{algorithmic}
+    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
+      \For{$i$ in $position$..$suffixarray_D$.length}
+        \If{$suffix$ fits in $i$}
+          \State return $i$ 
+        \EndIf
+      \EndFor 
     \EndFunction
   \end{algorithmic} 
 \end{frame}
