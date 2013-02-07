@@ -103,19 +103,19 @@
   \end{block}
 \end{frame}
 
-\begin{frame}{Rot-Schwarz-Bäume}
-  \begin{itemize}
-    \item Binäre Bäume
-    \item Durch rot-schwarz-Eigenschaften balanciert:
-      \begin{itemize}
-        \item Knoten sind rot oder schwarz, die Wurzel ist immer schwarz
-        \item Jeder Pfad von einem Knoten x zu einem Blatt enthält die gleiche Anzahl schwarzer 
-        Knoten
-        \item Es folgen keine 2 roten Knoten aufeinander  
-      \end{itemize}
-    \item Ermöglichen schnelles Einfügen und Suchen auf sortierten Daten
-  \end{itemize}
-\end{frame}
+%\begin{frame}{Rot-Schwarz-Bäume}
+%  \begin{itemize}
+%    \item Binäre Bäume
+%    \item Durch rot-schwarz-Eigenschaften balanciert:
+%      \begin{itemize}
+%        \item Knoten sind rot oder schwarz, die Wurzel ist immer schwarz
+%        \item Jeder Pfad von einem Knoten x zu einem Blatt enthält die gleiche Anzahl schwarzer 
+%        Knoten
+%        \item Es folgen keine 2 roten Knoten aufeinander  
+%      \end{itemize}
+%    \item Ermöglichen schnelles Einfügen und Suchen auf sortierten Daten
+%  \end{itemize}
+%\end{frame}
 
 \subsection{KSEARCH}
 
@@ -243,17 +243,17 @@
   \end{algorithmic}
 \end{frame}
 
-\begin{frame}{findPosition}
-  \begin{algorithmic}
-    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
-      \For{$i$ in $position$..$suffixarray_D$.length}
-        \If{$suffix$ fits in $suffixarrax_D[i]$}
-          \State return $i$ 
-        \EndIf
-      \EndFor 
-    \EndFunction
-  \end{algorithmic} 
-\end{frame}
+%\begin{frame}{findPosition}
+%  \begin{algorithmic}
+%    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
+%      \For{$i$ in $position$..$suffixarray_D$.length}
+%        \If{$suffix$ fits in $suffixarrax_D[i]$}
+%          \State return $i$ 
+%        \EndIf
+%      \EndFor 
+%    \EndFunction
+%  \end{algorithmic} 
+%\end{frame}
 
 \begin{frame}{Implementierungsansatz und Analyse}
   \begin{itemize}
@@ -296,7 +296,7 @@
       \item encseq - effizienter Datentyp für Sequenzen
       \item kmer iterator - Klasse zur Iteration über kmere von encseqs
       \item hashmap - Klasse zum Anlegen von Hashes
-      \item ranked list - Rot-Schwarz-Baum basierte Liste
+      \item ranked list - doppelt verkettete Liste
 
     \end{itemize}    
   \end{itemize}
@@ -343,6 +343,16 @@
     \frametitle{Gliederung}
     \tableofcontents[currentsection]
   \end{frame}
+  
+\begin{frame}{Vergleich SANS Koskonen \& Holm, MMF}
+  \begin{itemize}
+  \item query: 3 verschiedene Hummelproteine
+  \item database: Swissprot
+  \end{itemize}
+  \begin{figure}[h]
+    \includegraphics[height=7cm]{img/table_MMF_Holm.png}
+  \end{figure}
+\end{frame}
 
 \begin{frame}{Laufzeiten}
   \begin{itemize}
