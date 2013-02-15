@@ -2,6 +2,9 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage[german]{babel}
+
+\setlength{\parindent}{0pt}
 
 \title{Proteinsequenz-Vergleich mit KSEARCH und SANS}
 \author{Meike Bruns, Florian Markowsky, Michael Spohn}
@@ -9,8 +12,14 @@
 \begin{document}
 
 \maketitle
+\thispagestyle{empty}
+\begin{abstract}
+\end{abstract}
+\newpage
 
 \tableofcontents
+\thispagestyle{empty}
+\newpage
 
 \section{Einleitung: Sequenzvergleiche}
 
@@ -89,5 +98,20 @@ grüßer als das bisher kleinste Element ist und entsprechend verfahren. Im Fall
 da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
 
 \section{Auswertung}
+
+
+  \begin{table}[h]
+    \caption{AUC}
+    \begin{center}
+    \begin{tabular}{cccc}
+      \hline
+      &KSEARCH& &SANS\\
+      k = 5 & k = 6 & k = 6 & h = 50 \\
+      \hline
+      0,9663 & 0,9678 & 0,9677 & 0,9291 \\
+      \hline
+    \end{tabular}\\
+    \end{center}
+  \end{table}
 
 \end{document}
