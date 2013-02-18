@@ -154,22 +154,58 @@ da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar
 
 \section{Auswertung}
 
+Um die erstellten Implementierungen von KSEARCH und SANS zu testen, wurden einerseits Laufzeitvergleiche mit den bereits existierenden Algorithmen aus [dem PAPER], sowie Trefferquoten-Vergleiche mit bewährten Algorithmen wie SSEARCH und BLAST durchgeführt. Als Query-Datensatz dienten alle 1083 \textit{Rattus rattus}-Proteine aus der NCBI-Datenbank. Als Datenbank wurde die zur Uniprot gehörende Swissprot gewählt, welche ca. 500 000 Proteine enthält.
 
+\subsection{Laufzeiten}
+
+Die, im Vergleich zu SSEARCH und BLAST, sehr guten Laufzeiten aus [dem Paper] konnten nicht ganz erreicht werden (Tab. 1).\\Für KSEARCH liegt dies mit Sicherheit an der Speicherplatz-effizienteren Implementierung mittels Hashtable (s. Abschnitt ??)...\\Der selbst implementierte SANS-Algorithmus benötigt relativ lange für die Erstellung der Suffix-Arrays, zeigt jedoch, bei zunehmender Fensterbreite \textit h, eine weniger stark ansteigende Laufzeit als der Referenzalgorithmus.\\Mit Ausnahme des selbst implementierten KSEARCH zeigen alle Algorithmen eine signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
   \begin{table}[h]
-    \caption{AUC}
+    \caption{Laufzeitenvergleich; Holms entspricht den Algorithmen aus [dem Paper], MMF kennzeichnet die selbst implementierten Algorithmen; Berechnungen durchgeführt auf: Intel i5, 4*3.4GHz, 32gb RAM, XUbuntu}
     \begin{center}
-    \begin{tabular}{cccc}
-      \hline
-      &KSEARCH& &SANS\\
-      k = 5 & k = 6 & k = 7 & h = 50 \\
-      \hline
-      0,9663 & 0,9678 & 0,9677 & 0,9291 \\
-      \hline
-    \end{tabular}\\
+    \begin{tabular}{lrrr}
+    \hline
+    Algorithmus & Indexing & Suche & Gesamt\\
+    \hline
+    BLAST & 0m12s & 27m23s & 27m35s\\
+    SSEARCH & - & 60m0s & 60m0s\\
+    KSEARCH Holms k6 & 1m29s & 0m14s & 1m43s\\
+    KSEARCH MMF k6 & -  & 511m53s & 511m53s\\
+    SANS Holms h16 & 1m29s &  0m15s & 1m44s\\
+    SANS MMF  h16 & 14m19s & 0m36s & 14m55s\\
+    SANS Holms h1000 & 1m29s & 7m7s & 8m36s\\
+    SANS MMF  h1000 & 14m19s & 1m56s & 16m15s\\
+    \hline
+    \end{tabular}
     \end{center}
   \end{table}
 
-  \bibliography{quellen}{}
+\subsection{Scores}
+
+Einerseits wurde hierzu verglichen, wie viele der mit SSEARCH ermittelten Treffer auch mit den jeweiligen Algorithmen wiedergefunden werden konnten; andererseits wurde mittels AUC-Berechnungen die Effizienz der Algorithmen getestet.
+
+\subsubsection{Vergleich mit SSEARCH \& BLAST}
+
+\subsubsection{Area under the curve (AUC)}
+
+Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen Wiederfindungsrate (recall) $r$ geplottet wird.\\ Um beide Werte zu erhalten, wird als erstes eine Wahrheits-Referenz erstellt. Hierzu wurden alle BLAST-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, in eine Liste \textit l eingetragen. Anschließend wurde mit jedem der ersten 50 Proteine des Query-Datensatzes, mit jedem Algorithmus, eine einzelne Suche durchgeführt und die jeweils 50 besten Treffer \textit t ausgegeben. Für diese 50 Treffer wurden dann Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und ein precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Die Fläche unter der resultierenden Kurve im precision-recall-Diagramm wird als Area under the curve (AUC) bezeichnet. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele falsch Positiven Treffer auftreten, bis die maximale Anzahl aller richtig Treffer ermittelt ist. Je kleiner also der Wert für AUC, je ineffizienter ist der Algorithmus.\\Zu beachten ist, dass die beim Plotten von \textit p gegen \textit r nur ein Histogramm entsteht, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.
+  \begin{table}[h]
+    \caption{AUC}
+    \begin{center}
+    \begin{tabular}{cccccccc}
+      \hline
+       \multicolumn{3}{c}{KSEARCH Homes} & SANS Holmes&\multicolumn{3}{c}{KSEARCH MMF} & SANS MMF\\
+      \cline{1-3}\cline{5-7}
+      k = 5 & k = 6 & k = 7 & h = 50 & k = 5 & k = 6 & k = 7 & h = 50 \\
+      \hline
+      0,0000 & 0,0000 & 0,0000 & 0,0000 & 0,9663 & 0,9678 & 0,9677 & 0,9291 \\
+      \hline
+    \end{tabular}
+    \end{center}
+  \end{table}
+
+\section{Diskussion}
+
+\bibliography{quellen}{}
 \bibliographystyle{unsrt}
 
 \end{document}
