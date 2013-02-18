@@ -3,6 +3,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[german]{babel}
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{cite}
 
 \setlength{\parindent}{0pt}
 
@@ -23,15 +26,67 @@
 
 \section{Einleitung: Sequenzvergleiche}
 
+Eine bei der Sequenzanalyse am häufigsten anfallenden Aufgaben ist der Vergleich von Sequenzen. Sowohl bei DNA als auch bei Proteinsequenzen können
+durch Sequenzvergleich gefundene, ähnliche Sequenzen oder Sequenzfamilien Aufschluss über Verwandschaftsbeziehungen, konservierte Regionen und zahlreiche
+andere Eigenschaften einer betrachteten Sequenz geben. Da der exakte Sequenzvergleich, beispielsweise durch die Suche von Alignments per Smith-Waterman
+Algorithmus (\cite{Water}), sehr zeitaufwändig ist, bedient man sich meist schnellerer, nicht-axakter Methoden. Hier ist besonders der BLAST-Algorithmus (\cite{BLAST})
+zu erwähnen, der sich als de-facto Standart etabliert hat.
+%TODO mehr blalba?
+
+Im folgenden werden wir zwei Familien von Sequenzvergleich-Algorithmen und ihre wichtigsten Vertreter kurz vorstellen.
+\begin{itemize}
+  \item Aligmentbasierte Methoden
+    \begin{itemize}
+      \item SSEARCH: Der SSearch-ALgorithmus führ ein Alignment der Query- und der Datenbanksequenzen durch. %TODO Algorithmen kurz erklären
+      \item FASTA
+      \item BLAST
+    \end{itemize}
+  \item Ranking mittels Feature-Vektoren
+    \begin{itemize}
+      \item USearch
+      \item KSearch
+      \item SANS
+    \end{itemize}
+\end{itemize}
+
 \section{Algorithmen \& Implementierung}
 
 \subsection{Datenstrukturen}
 
+\subsubsection{Hashes}%TODO erklären wir das? rot-schwarz bäume auch?
+
+\subsubsection{Suffix-Arrays}
+
+Ein Suffix-Array ist eine Indexdatenstruktur, die die Indices der lexikographisch geordneten Suffixe eines Strings speichert. %TODO erklären, Quelle: GI-Skript?
+
 \subsection{KSEARCH}
 \label{ksearch}
 
+Der in \cite{Holm} vorgestellte KSearch-Algorithmus nutzt als Ähnlichkeitsmaß zweier Sequenzen die Übereinstimmung ihrer kmer-Profile.%TODO KSearch beschreiben
+
+%\begin{algorithm}
+%  \caption{Pseudocode unserer KSearch-Implementierung}
+%\begin{algorithmic}
+%  \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
+%    \For{each query-protein $q$}  
+%      \State calculate kmer-profile \Comment $O(|q|)$
+%      \State store kmer-profile in hashtable
+%    \EndFor \Comment $\boldsymbol{O(|q_0..q_n|)}$
+%    \For{each database-protein $d$} 
+%      \State calculate kmer-profile \Comment $O(|d|)$
+%      \For{i in $Q$}
+%        \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
+%        \State output $KSEARCH(d,q)$
+%      \EndFor \Comment $\boldsymbol{ O(|Q| \cdot kVariety(d))}$
+%    \EndFor   \Comment $\boldsymbol{O(|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
+%  \EndFunction \Comment overall time complexity: $\boldsymbol{O(|q_0..q_n|+|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+%\end{algorithmic}
+%\end{algorithm}
+
 \subsection{SANS}
 \label{sans}
+
+%TODO Sans beschreiben
 
 \subsection{Software Architektur}
 
@@ -41,12 +96,12 @@ Wir implementieren unsere Algorithmen als Teil der Genometools, einer Sammlung v
 Im folgenden gehen wir auf die Teile der genometools ein, die wir für unsere Implementierung genutzt haben.
 \begin{itemize}
   \item encseq: Ein Tool zur Repräsentation von Biosequenzen.
-  \item suffixerator: Ein Tool zur berechnung von Suffixbäumen aus sequenzdateien oder encseqs.
+  \item suffixerator: Ein Tool zur Berechnung von Suffixbäumen aus sequenzdateien oder encseqs.
 \end{itemize}
 
 \subsubsection{Struktur}
 
-Da wir zwei verschiedene ALgorithmen implementieren, ist eine logische Trennung wichtig. Da beide jedoch eine ähnliche Funktionalität erfüllen und
+Da wir zwei verschiedene Algorithmen implementieren, ist eine logische Trennung wichtig. Da beide jedoch eine ähnliche Funktionalität erfüllen und
 zumindest teilweise gleiche Strukturen beinhalten, würde eine komplette Trennung auf Code-Redundanzen hinauslaufen. Um dieses Dilemma zu lösen, haben wir
 die \emph{Seqscore} Toolbox geschaffen, die die beiden Unter-Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
 \emph{bla\_seqscore.c}. Dabei ruft jedes Tool abhängig von den ihm übergebenen Ausgabeparametern einen Konstruktor in \emph{bla\_seqscore.c} auf. Es gibt also
@@ -106,12 +161,15 @@ da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar
     \begin{tabular}{cccc}
       \hline
       &KSEARCH& &SANS\\
-      k = 5 & k = 6 & k = 6 & h = 50 \\
+      k = 5 & k = 6 & k = 7 & h = 50 \\
       \hline
       0,9663 & 0,9678 & 0,9677 & 0,9291 \\
       \hline
     \end{tabular}\\
     \end{center}
   \end{table}
+
+  \bibliography{quellen}{}
+\bibliographystyle{unsrt}
 
 \end{document}
