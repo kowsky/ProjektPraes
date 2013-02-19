@@ -117,6 +117,24 @@ Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.
   \end{figure}
 \end{center}
 
+\begin{center}
+  \begin{figure}
+    \includegraphics[width = \linewidth]{img/seqscore_seqence_fam.png}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -matrix Option. Die Aufrufe für die -nbest Option sind analog..}
+    \label{manbes}
+  \end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}
+    \includegraphics[width = \linewidth]{img/seqscore_sequence_fam_thresh.png}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -threshold Option. Man beachte, dass beim Aufruf der Funktion
+      enumerate\_results\_ksearch() ein NULL-Pointer statt einer Ergebnisstruktur übergeben wird, da Scores, die über dem Grenzwert liegen, sofort ausgegeben
+      werden, ohne in einer Datenstruktur gespeichert zu werden.}
+    \label{thresh}
+  \end{figure}
+\end{center}
+
 Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
 Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
 
