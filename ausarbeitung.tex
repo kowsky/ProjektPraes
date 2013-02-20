@@ -3,7 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[german]{babel}
-%\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 %\usepackage{algorithmic}
 \usepackage{cite}
 
@@ -62,26 +63,39 @@ Ein Suffix-Array ist eine Indexdatenstruktur, die die Indices der lexikographisc
 \subsection{KSEARCH}
 \label{ksearch}
 
-Der in \cite{Holm} vorgestellte KSearch-Algorithmus nutzt als Ähnlichkeitsmaß zweier Sequenzen die Übereinstimmung ihrer kmer-Profile.%TODO KSearch beschreiben
+Der in \cite{Holm} vorgestellte KSEARCH-Algorithmus ermittelt Ähnlichkeitsscores für Proteinpaare anhand der k-mere, die in den Sequenzen beider Proteine vorkommen. Für jedes mögliche k-mer der Länge \begin{math}k\end{math} wird die Häufigkeit seines Auftretens im query-Protein mit der Häufigkeit seines Auftretens im database-Protein multipliziert. Die Summe dieser Produkte über alle k-mere ergibt den KSEARCH-Score:
 
-%\begin{algorithm}
-%  \caption{Pseudocode unserer KSearch-Implementierung}
-%\begin{algorithmic}
-%  \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
-%    \For{each query-protein $q$}  
-%      \State calculate kmer-profile \Comment $O(|q|)$
-%      \State store kmer-profile in hashtable
-%    \EndFor \Comment $\boldsymbol{O(|q_0..q_n|)}$
-%    \For{each database-protein $d$} 
-%      \State calculate kmer-profile \Comment $O(|d|)$
-%      \For{i in $Q$}
-%        \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
-%        \State output $KSEARCH(d,q)$
-%      \EndFor \Comment $\boldsymbol{ O(|Q| \cdot kVariety(d))}$
-%    \EndFor   \Comment $\boldsymbol{O(|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
-%  \EndFunction \Comment overall time complexity: $\boldsymbol{O(|q_0..q_n|+|d_0..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
-%\end{algorithmic}
-%\end{algorithm}
+\begin{equation}
+KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(database)(w)
+\end{equation}  
+\textit{mit $G_k(query)(w)$ = Häufigkeit des Vorkommens des k-mers $w$ im query-Protein}\\ \\
+
+Koskinen und Holm benutzen zu Berechnung der KSEARCH - Scores Suffixarrays, und erreichen so eine theoretische Laufzeitkomplexität von $O(|q_1..q_n| \cdot |d_1..d_n|)$, also WIE??? in der Gesamtlänge der query- und database-Proteine. Laut Koskinen und Holm liegt der Vorteil der Implementierung mit Suffixarrays darin, dass der Parameter für $k$ frei gewählt werden kann. 
+%TODO Wie berechnen Koskinen und Holm den KSERACH SCORE??"The KSEARCH algorithm checks all instances of k-mers in the database, and the number of these instances %grows proportionally to the size of the database" [Seite 440]. \\
+Mit der q-gram-Distanz existiert bereits ein Modell, dass auf der Idee basiert, Sequenzpaaren anhand vom gemeinsamen k-meren (bzw. q-Worten)Änhnlichkeitsscores zuzuweisen. Im Gegensatz zum KSEARCH Score ergibt sich der Score bei der q-gram-Distanz aus der Summe der Differenzbeträge $|G_q(query)(w) - G_q(database)(w)|$ der Häufigkeiten der k-mere im query- und database-Protein. Bei der q-gram-Distanz konnte durch die Verwendung von q-Wort Profilen eine Laufzeit von $O(|n|+|m|+\mathcal{A}^q)$ erreicht werden, wobei $|m|$ und $|n|$ die Längen der Proteine, $\mathcal{A}^q$ die Anzahl der möglichen q-Worte darstellen. [Fondations of Sequence Analysis, Seite 43]. Es erschien uns daher sinnvoll, q-Wort-Profile auch für die Berechnung von KSEARCH-Scores zu nutzen.
+In unserer Implementierung des KSEARCH-Algorithmus werden daher zunächst die k-mer-Profile aller query-Proteine berechnet, und, um eine lineare Laufzeit zu erhalten, gespeichert. Für ein k-mer- bzw. q-Wort-Profil wird jedes mögliche k-mer durch ein Integer codiert. Ein Array von der Größe $\mathcal{A}^k$ enthält an jeder Position $i$ die Anzahl des dazugehörigen k-mers mit dem Integercode $i$, und wird daher mit Null initialisiert. Durch eine geschickte Codierung können die Codes der einzelnen, in der Sequenz enthaltenen k-mere in konstanter Zeit ermittelt werden, so dass die Berechnung der k-mer-Profile in ${O(|q_1..q_n|)}$ erfolgt. Da der KSEARCH-Score zur Bewertung von Proteinsequenzpaaren genutzt werden soll, ergibt sich bei der Verwendung von Arrays zur Speicherung der k-mer Profile eine erforderliche Größe von $\mathcal{A}^k = 20^k$. Darüber hinaus sind die Proteinsequenzen relativ kurz, so dass die berechneten k-mer Profile nur spärlich besetzt sind. Daher nutzen wir Hashes, um die k-mer-Profile zu speichern. 
+Wenn die k-mer Profile der query-Proteine berechnet sind, wird für jedes database-Protein das k-mer-Profil als hash angelegt und der KSEARCH-Score mit allen query-Poteinen ermittelt. Da das k-mer-Profil des database-Proteins nicht noch einmal gebraucht wird, brauchen wir es nicht zu speichern. Das Berechnen des k-mer-Profils eines database-Proteins $d$ geschieht in $O(|d|)$, für alle database-Proteine also in $O(d_1..d_n)$. Dazu kommt die Berechnung der KSEARCH-Scores, die, da das k-mer Profil als Hash vorliegt, für ein einzelnes Proteinpaar linear in der Anzahl unterschiedlicher k-mere im database-Protein $O(kVariety(d))$ ist, für alle Proteinpaare also in $O(|D| \cdot |Q| \cdot kVariety(d))$ liegt. Insgesamt erhalten wir also eine Laufzeitkomplexität von $O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))$.
+
+
+
+\begin{algorithm}
+  \caption{Pseudocode unserer KSearch-Implementierung}
+\begin{algorithmic}
+  \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
+    \For{each query-protein $q$}  
+      \State calculate kmer-profile \Comment $O(|q|)$
+      \State store kmer-profile in hashtable
+    \EndFor \Comment $\mathbf{O(|q_1..q_n|)}$
+    \For{each database-protein $d$} 
+      \State calculate kmer-profile \Comment $O(|d|)$
+      \For{i in $Q$}
+        \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
+        \State output $KSEARCH(d,q)$
+      \EndFor \Comment $\mathbf{O(|Q| \cdot kVariety(d))}$
+    \EndFor   \Comment $\mathbf{O(|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
+  \EndFunction \Comment overall time complexity: $\mathbf{O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{SANS}
 \label{sans}
