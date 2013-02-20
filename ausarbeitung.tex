@@ -29,28 +29,13 @@
 
 \section{Einleitung: Sequenzvergleiche}
 
-Eine bei der Sequenzanalyse am häufigsten anfallenden Aufgaben ist der Vergleich von Sequenzen. Sowohl bei DNA als auch bei Proteinsequenzen können
-durch Sequenzvergleich gefundene, ähnliche Sequenzen oder Sequenzfamilien Aufschluss über Verwandschaftsbeziehungen, konservierte Regionen und zahlreiche
-andere Eigenschaften einer betrachteten Sequenz geben. Da der exakte Sequenzvergleich, beispielsweise durch die Suche von Alignments per Smith-Waterman
-Algorithmus (\cite{Water}), sehr zeitaufwändig ist, bedient man sich meist schnellerer, nicht-axakter Methoden. Hier ist besonders der BLAST-Algorithmus (\cite{BLAST})
-zu erwähnen, der sich als de-facto Standart etabliert hat.
-%TODO mehr blalba?
+Eine bei der Sequenzanalyse am häufigsten anfallenden Aufgaben ist der Vergleich von Sequenzen. Sowohl bei DNA als auch bei Proteinsequenzen geben Sequenzvergleiche Aufschluss über die Ähnlichkeiten von Sequenzen, die dazu herangezogen werden, Verwandschaftsbeziehungen zwischen den einzelnen Sequenzen oder konservierte Regionen zu ermitteln. Bei unbekannten Proteinensequenzen lassen sich so beispielsweise Vorhersagen zur Funktion oder zur Struktur machen. Da exakte Sequenzvergleiche sehr zeitaufwendig sind, wurden verschiedene weniger exakte, dafür schnellere Algorithmen entwickelt.\\
+Viele dieser Algorithmen basieren auf Sequenzalignments, wie der FASTA-Algorithmus(\cite{FASTA}) oder BLAST(\cite{BLAST}), der sich als Standard für den Proteinvergleich etabliert hat.
+Andere Algorithmen, wie z.B. USEARCH (\cite{USEARCH}) berechnen Ähnlichkeiten von Sequenzen dagegen unabhängig von Alignments anhand der Ähnlichkeiten von Feature-Vektoren. Feature-Vektoren eine Sequenz können z.B. die in ihr enthaltenen k-mere oder Substrings sein. Um die Ähnlichkeit zweier Sequenzen zu bestimmen, werden ihre Feature-Vektoren Verglichen und daraus ein Ähnlichkeits-Score ermittelt.\\
+Während alignmentbasierte Methoden für viele Zwecke eingesetzt werden können, sind Feature-Vektor basierte Scores hauptsächlich in Anwendungsbereichen wie der nearest-neighbor-Analyse vorteilhaft. Dadurch, dass sie ganz ohne Alignment auskommen, sind sie meist sehr schnell und lassen sich daher auch für große Datenmengen gut verwenden. Dass die berechneten Scores keine detaillierten Informationen darüber enthalten, in welchen Einzelheiten die Ähnlichkeiten zweier Sequenzen bestehen, ist in nearest-neighbor-Analysen wie z.B. dem Clustering kein Nachteil. Hier ist vor allem von Interesse, dass hohe Scores ein verlässlicher Indikator für eine hohe Ähnlichkeit sind.\\
+Im folgenden stellen wir unsere Implementierung zwei von J. Patrik Koskinen und Liisa Holm entwickelte Algorithmen - SANS (Suffix Array Neighborhood Search) und KSEARCH - vor, die Feature-Vektor basierte Scores für Protein-Sequenzpaare ermitteln. Koskinen und Holm erreichten mit SANS für Proteinsequenzen, deren Sequenzidentität zwischen 50 und 100\% lag, eine mit Blast vergleichbare Sensitivität. Dieses Ergebnis ist für die Vergleiche von Proteinsequenzen überraschend, denn wegen der hohen Mutationswahrscheinlichkeiten einzelner Aminosäuren werden in BLAST zur Bestimmung von Ähnlichkeiten zwischen Proteinen Substitutionsmatrizen verwendet, die die Mutationswahrscheinlichkeiten der Aminosäuren in die Ähnlichkeitsberechnung einbeziehen. Diese Anpassung ist bei den vorgestellten Algorithmen nicht möglich.
+%TODO und für KSEARCH? für mich sieht es bei k= 5 und k=6 ähnlich aus... in FIG 5...
 
-Im folgenden werden wir zwei Familien von Sequenzvergleich-Algorithmen und ihre wichtigsten Vertreter kurz vorstellen.
-\begin{itemize}
-  \item Aligmentbasierte Methoden
-    \begin{itemize}
-      \item SSEARCH: Der SSearch-ALgorithmus führ ein Alignment der Query- und der Datenbanksequenzen durch. %TODO Algorithmen kurz erklären
-      \item FASTA
-      \item BLAST
-    \end{itemize}
-  \item Ranking mittels Feature-Vektoren
-    \begin{itemize}
-      \item USearch
-      \item KSearch
-      \item SANS
-    \end{itemize}
-\end{itemize}
 
 \section{Algorithmen \& Implementierung}
 
@@ -72,7 +57,7 @@ KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(data
 \end{equation}  
 \textit{mit $G_k(query)(w)$ = Häufigkeit des Vorkommens des k-mers $w$ im query-Protein}\\ \\
 
-Koskinen und Holm benutzen zu Berechnung der KSEARCH - Scores Suffixarrays, und erreichen so eine theoretische Laufzeitkomplexität von $O(|q_1..q_n| \cdot |d_1..d_n|)$, also WIE??? in der Gesamtlänge der query- und database-Proteine. Laut Koskinen und Holm liegt der Vorteil der Implementierung mit Suffixarrays darin, dass der Parameter für $k$ frei gewählt werden kann. \\
+Koskinen und Holm benutzen zu Berechnung der KSEARCH - Scores Suffixarrays, und erreichen so eine theoretische Laufzeitkomplexität von $O(|q_1..q_n| \cdot |d_1..d_n|)$, also in der Gesamtlänge der query- und database-Proteine. Laut Koskinen und Holm liegt der Vorteil der Implementierung mit Suffixarrays darin, dass der Parameter für $k$ frei gewählt werden kann. \\
 %TODO Wie berechnen Koskinen und Holm den KSERACH SCORE??"The KSEARCH algorithm checks all instances of k-mers in the database, and the number of these instances %grows proportionally to the size of the database" [Seite 440]. \\
 Mit der q-gram-Distanz existiert bereits ein Modell, dass auf der Idee basiert, Sequenzpaaren anhand vom gemeinsamen k-meren (bzw. q-Worten)Änhnlichkeitsscores zuzuweisen. Im Gegensatz zum KSEARCH Score ergibt sich der Score bei der q-gram-Distanz aus der Summe der Differenzbeträge $|G_q(query)(w) - G_q(database)(w)|$ der Häufigkeiten der k-mere im query- und database-Protein. Bei der q-gram-Distanz konnte durch die Verwendung von q-Wort Profilen eine Laufzeit von $O(|n|+|m|+\mathcal{A}^q)$ erreicht werden, wobei $|m|$ und $|n|$ die Längen der Proteine, $\mathcal{A}^q$ die Anzahl der möglichen q-Worte darstellen. [Fondations of Sequence Analysis, Seite 43]. Es erschien uns daher sinnvoll, q-Wort-Profile auch für die Berechnung von KSEARCH-Scores zu nutzen.\\
 In unserer Implementierung des KSEARCH-Algorithmus werden daher zunächst die k-mer-Profile aller query-Proteine berechnet, und, um eine lineare Laufzeit zu erhalten, gespeichert. Für ein k-mer- bzw. q-Wort-Profil wird jedes mögliche k-mer durch ein Integer codiert. Ein Array von der Größe $\mathcal{A}^k$ enthält an jeder Position $i$ die Anzahl des dazugehörigen k-mers mit dem Integercode $i$, und wird daher mit Null initialisiert. Durch eine geschickte Codierung können die Codes der einzelnen, in der Sequenz enthaltenen k-mere in konstanter Zeit ermittelt werden, so dass die Berechnung der k-mer-Profile in ${O(|q_1..q_n|)}$ erfolgt. Da der KSEARCH-Score zur Bewertung von Proteinsequenzpaaren genutzt werden soll, ergibt sich bei der Verwendung von Arrays zur Speicherung der k-mer Profile eine erforderliche Größe von $\mathcal{A}^k = 20^k$. Darüber hinaus sind die Proteinsequenzen relativ kurz, so dass die berechneten k-mer Profile nur spärlich besetzt sind. Daher nutzen wir Hashes, um die k-mer-Profile zu speichern. \\
@@ -122,7 +107,9 @@ id(a,b)=\begin{cases}
 \end{equation}
 
 Koskinen und Holm setzen die Fenstergröße h standardmäßig auf die Größe der als Ausgabe gewünschten Anzahl von Proteinpaaren. Das Ziel dabei ist es, jedem der ausgegebenen h Proteine, die Möglichkeit zu geben, im Fenster aufzutauchen, selbst wenn die Suffixe $suffix_{d}$ aller h Proteine beispielsweise vor der Position $i$ des Suffixes $suffix_{qx}$ auftauchen. Da wir mehrere Ausgabevarianten implementieren, haben wir uns dagegen entschieden, den Standardwert für h an die Ausgabe zu koppeln.\\
-Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität linear zur Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist. ECHT?? Da die endgültigen Scores erst feststehen, wenn alle Suffixe im $suffixarray_Q$ abgehandelt wurden, müssen wir zum Ermitteln der Scores eine Scorematrix der Größe $|Q|\cdot|D|$ anlegen und mit Null initialisieren, wobei $|Q|$ die Anzahl der query-, $|D|$ die Anzahl der database-Proteine beschreibt. Dies benötigt $O(|Q|\cdot|D|)$ Zeit. Jetzt ermitteln wir die Positionen der Suffixe $suffix_{qx}$ in $suffixarray_D$. Dazu laufen wir einmal durch den gesamten $suffixarray_Q$. Da die Suffixe in den Suffixarrays lexikographisch geordnet sind, brauchen wir nicht für jeden $suffix_{qx}$ durch den gesamten $suffixarray_D$ zu laufen, sondern können mit der Suche nach der Position von $suffix_{qx}$ an der Position beginnen, an der wir auch $suffix_{qx-1}$ eingeordnet haben. Diese Position merken wir uns in der Variablen $position$. Damit laufen wir einmal durch den gesamten $suffixarray_Q$ sowie insgesamt genau einmal durch den gesamten $suffixarray_D$ und bleiben so in $O(|q_0..q_n| + |d_0..d_n|)$. Zusätzlich müssen immer, wenn wir eine Position gefunden haben, die Scores $2 \cdot h$ Proteinpaaren in konstanter Zeit aktualisiert werden, so dass sich für die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von  ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
+Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität linear zur Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist.
+%TODO ECHT?? 
+Da die endgültigen Scores erst feststehen, wenn alle Suffixe im $suffixarray_Q$ abgehandelt wurden, müssen wir zum Ermitteln der Scores eine Scorematrix der Größe $|Q|\cdot|D|$ anlegen und mit Null initialisieren, wobei $|Q|$ die Anzahl der query-, $|D|$ die Anzahl der database-Proteine beschreibt. Dies benötigt $O(|Q|\cdot|D|)$ Zeit. Jetzt ermitteln wir die Positionen der Suffixe $suffix_{qx}$ in $suffixarray_D$. Dazu laufen wir einmal durch den gesamten $suffixarray_Q$. Da die Suffixe in den Suffixarrays lexikographisch geordnet sind, brauchen wir nicht für jeden $suffix_{qx}$ durch den gesamten $suffixarray_D$ zu laufen, sondern können mit der Suche nach der Position von $suffix_{qx}$ an der Position beginnen, an der wir auch $suffix_{qx-1}$ eingeordnet haben. Diese Position merken wir uns in der Variablen $position$. Damit laufen wir einmal durch den gesamten $suffixarray_Q$ sowie insgesamt genau einmal durch den gesamten $suffixarray_D$ und bleiben so in $O(|q_0..q_n| + |d_0..d_n|)$. Zusätzlich müssen immer, wenn wir eine Position gefunden haben, die Scores $2 \cdot h$ Proteinpaaren in konstanter Zeit aktualisiert werden, so dass sich für die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von  ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
 
 
 \begin{algorithm}
