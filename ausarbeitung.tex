@@ -112,14 +112,16 @@ genutzt, dass Proteinpaare von query- und database-Proteinen, deren Suffixe im
 Suffixarray nahe beieinander liegen, mit einem hohen Score bewertet werden.\\
 Zur Berechnung der SANS-Scores werden zunächst alle query-Proteine $q_1..q_n$ konkateniert, ebenso alle database-Proteine $d_1..d_n$. 
 Aus den konkatenierten Sequenzen werden die Suffixarrays \emph{Suffixarray$_Q$} und \emph{Suffixarray$_D$} erstellt. 
-Nun wird für jeden Suffix $suffix_{qx}$ im $Suffixarray_Q$ die Position $i$ im $Suffixarray_D$ ermittelt, an der der Suffix gemäß der lexikographischen Ordnung einzusortieren wäre. 
-Ein Fenster der Größe $2h$ wird so über diese Position gelegt, dass es die $h$ Positionen vor und die $h$ Positionen nach dem hypothetisch einsortierten $suffix_{qx}$ überdeckt. 
+Nun wird für jeden Suffix \emph{suffix$_{qx}$} im \emph{Suffixarray$_Q$} die
+Position $i$ im \emph{Suffixarray$_D$} ermittelt, an der der Suffix gemäß der lexikographischen Ordnung einzusortieren wäre. 
+Ein Fenster der Größe $2h$ wird so über diese Position gelegt, dass es die $h$
+Positionen vor und die $h$ Positionen nach dem hypothetisch einsortierten
+\emph{suffix$_{qx}$} überdeckt. 
 Anhand dieses Fensters werden die SANS-Scores aktualisiert: 
-Jeder Suffix $suffix_{dy}$ eines Proteins $y$ im Fenster erhöht den SANS-Score-Zähler der dazugezugehörigen Proteinkombination $(query_x,database_y)$ um eins. \\
->>>>>>> GSA quelle, text kleinigkeiten
-Wenn für alle Suffixe aus $Suffixarray_Q$ die Scores aktualisiert wurden, kann der SANS-Score ausgegeben werden.
+Jeder Suffix \emph{suffix$_{dy}$} eines Proteins $y$ im Fenster erhöht den SANS-Score-Zähler der dazugezugehörigen Proteinkombination $(query_x,database_y)$ um eins. \\
+Wenn für alle Suffixe aus \emph{Suffixarray$_Q$} die Scores aktualisiert wurden, kann der SANS-Score ausgegeben werden.
 
-Formal berechnet sich der $SANS(query,database)$ also folgendermaßen:\\
+Formal berechnet sich der \emph{SANS(query,database)} also folgendermaßen:\\
 
 \begin{equation}
 SANS(query,database) = \sum_{s \in suffixe_q} \sum_{j=-w}^{+w} id(database,Suffixarray_D[position_i(s)  +j].protein) 
@@ -134,12 +136,37 @@ id(a,b)=\begin{cases}
 \end{cases}
 \end{equation}
 
-Koskinen und Holm setzen die Fenstergröße h standardmäßig auf die Größe der als Ausgabe gewünschten Anzahl von Proteinpaaren. Das Ziel dabei ist es, jedem der ausgegebenen h Proteine, die Möglichkeit zu geben, im Fenster aufzutauchen, selbst wenn die Suffixe $suffix_{d}$ aller h Proteine beispielsweise vor der Position $i$ des Suffixes $suffix_{qx}$ auftauchen. Da wir mehrere Ausgabevarianten implementieren, haben wir uns dagegen entschieden, den Standardwert für h an die Ausgabe zu koppeln.\\
-Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität linear zur Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist. Die Suffixarrays stellen die Eingabe für unseren SANS-Algorithmus dar.
+Koskinen und Holm setzen die Fenstergröße h standardmäßig auf die Größe der als
+Ausgabe gewünschten Anzahl von Proteinpaaren pro query Protein. 
+Das Ziel dabei ist es, jedem der ausgegebenen h Proteine, die Möglichkeit zu
+geben, im Fenster aufzutauchen, selbst wenn die Suffixe \emph{suffix$_{d}$}
+aller h Proteine beispielsweise vor der Position $i$ des Suffixes
+\emph{suffix$_{qx}$} auftauchen. 
+Da wir mehrere Ausgabevarianten implementieren, haben wir uns dagegen entschieden, den Standardwert für h an die Ausgabe zu koppeln.\\
+Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir
+den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität
+linear in der Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist.
+Die Suffixarrays stellen die Eingabe für unseren SANS-Algorithmus dar.
 %TODO ECHT?? -> Laufzeit. 
-Da die endgültigen Scores erst feststehen, wenn alle Suffixe im $suffixarray_Q$
+Da die endgültigen Scores erst feststehen, wenn alle Suffixe im
+\emph{Suffixarray$_Q$}
 verarbeitet wurden, muss zur Ermittelung der Scores eine Scorematrix der Größe
-$|Q|\cdot|D|$ angelegt und mit Null initialisiert werden, wobei $|Q|$ die Anzahl der query-, $|D|$ die Anzahl der database-Proteine beschreibt. Dies benötigt $O(|Q|\cdot|D|)$ Zeit. Jetzt ermitteln wir die Positionen der Suffixe $suffix_{qx}$ in $suffixarray_D$. Dazu laufen wir einmal durch den gesamten $suffixarray_Q$. Da die Suffixe in den Suffixarrays lexikographisch geordnet sind, brauchen wir nicht für jeden $suffix_{qx}$ durch den gesamten $suffixarray_D$ zu laufen, sondern können mit der Suche nach der Position von $suffix_{qx}$ an der Position beginnen, an der wir auch $suffix_{qx-1}$ eingeordnet haben. Diese Position merken wir uns in der Variablen $position$. Damit laufen wir einmal durch den gesamten $suffixarray_Q$ sowie insgesamt genau einmal durch den gesamten $suffixarray_D$ und bleiben so in $O(|q_0..q_n| + |d_0..d_n|)$. Zusätzlich müssen immer, wenn wir eine Position gefunden haben, die Scores $2 \cdot h$ Proteinpaaren in konstanter Zeit aktualisiert werden, so dass sich für die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von  ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
+$|Q|\cdot|D|$ angelegt und mit Null initialisiert werden, wobei $|Q|$ die Anzahl
+der query-, $|D|$ die Anzahl der database-Proteine beschreibt. Dies benötigt
+$O(|Q|\cdot|D|)$ Zeit. Jetzt ermitteln wir die Positionen der Suffixe
+i\emph{Suffix$_{qx}$} in \emph{Suffixarray$_D$}. Dazu laufen wir einmal durch
+den gesamten \emph{Suffixarray$_Q$}. Da die Suffixe in den Suffixarrays
+lexikographisch geordnet sind, brauchen wir nicht für jeden \emph{Suffix$_{qx}$}
+durch den gesamten \emph{Suffixarray$_D$} zu laufen, sondern können mit der
+Suche nach der Position von \emph{Suffix$_{qx}$} an der Position beginnen, an
+der wir auch \emph{Suffix$_{qx-1}$} eingeordnet haben. Diese Position merken wir
+uns in der Variablen \emph{position}. Damit laufen wir einmal durch den gesamten
+\emph{Suffixarray$_Q$} sowie insgesamt genau einmal durch den gesamten
+\emph{Suffixarray$_D$} und bleiben so in $O(|q_0..q_n| + |d_0..d_n|)$.
+Zusätzlich müssen immer, wenn wir eine Position gefunden haben, die Scores $2
+\cdot h$ Proteinpaaren in konstanter Zeit aktualisiert werden, so dass sich für
+die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h +
+|d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
 
 
 \begin{algorithm}
@@ -173,13 +200,20 @@ $|Q|\cdot|D|$ angelegt und mit Null initialisiert werden, wobei $|Q|$ die Anzahl
 
 \subsubsection{Genome Tools}
 
-Die Genome Tools sind eine freie Sammlung von Tools, Klassen und Modulen zum Analysieren von Genomen und zur entwicklung weiterer C-Programme zur Genomanalyse (\cite{gtools}). Wir implementierten die Algorithmen SANS und KSEARCH innerhalb der GenomeTools-Umgebung und nutzten dabei folgende der durch GenomeTools bereitgestellten Funktionalitäten:
+Die Genome Tools sind eine freie Sammlung von Tools, Klassen und Modulen zum
+Analysieren von Genomen und zur Entwicklung weiterer Programme zur Genomanalyse \cite{gtools}. Wir implementierten die Algorithmen SANS und KSEARCH innerhalb der GenomeTools-Umgebung und nutzten dabei folgende der durch GenomeTools bereitgestellten Funktionalitäten:
 
 \paragraph{GtToolbox}
-Die GtToolbox ist eine Klasse, die die einzelne Tools enthält. Sie besitzt Methoden zum parsen der übergebenen Parameter und zum Aufrufen des ausgewählten Tools. Wir implementierten unsere Algorithmen SANS und KSEARCH als Tools innerhalb einer GtToolbox gt\_seqscore. 
+Die GtToolbox ist eine Klasse, die die einzelne Tools enthält. Sie besitzt
+Methoden zum parsen der übergebenen Parameter und zum Aufrufen des ausgewählten
+Tools. Wir implementierten unsere Algorithmen SANS und KSEARCH als Tools
+innerhalb der GtToolbox gt\_seqscore. 
 
 \paragraph{GtEncseq}
-GtEncseq encode ist ein Tool, um aus ein oder mehreren Sequenzdateien ein GtEncseq-Objekt zu erzeugen. Ein Objekt der Klasse GtEncseq besteht aus den konkatenierten und durch bit-Kompression codierten Sequenzen der Eingabedateien. Je nachdem, welche Funktionalität für ein GtEncseq-Objekt gewünscht ist, werden pro Objekt bis zu vier Dateien angelegt. Mit den verschiedenen Funktionen der GtEncseq-Klasse lassen sich unterschiedliche Eigenschaften der codierten Sequenzen abfragen. Wir verwenden GtEncseq-Objekte als Eingabe für den KSEARCH-Algorithmus.
+GtEncseq encode ist ein Tool, um aus ein oder mehreren Sequenzdateien ein
+GtEncseq-Objekt zu erzeugen. Ein Objekt der Klasse GtEncseq besteht aus den
+konkatenierten und durch bit-Kompression codierten Sequenzen der Eingabedateien.
+Je nachdem, welche Funktionalitäten für ein GtEncseq-Objekt gewünscht werden, werden pro Objekt bis zu vier Dateien angelegt. Mit den verschiedenen Funktionen der GtEncseq-Klasse lassen sich unterschiedliche Eigenschaften der codierten Sequenzen abfragen. Wir verwenden GtEncseq-Objekte als Eingabe für den KSEARCH-Algorithmus.
 
 \paragraph{GtKmercodeiterator}
 Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncseq-Objekt, eine Startposition und eine Länge für k erhalten. Mit den Klassenfunktionen gt\_kmercodeiterator\_encseq\_next() wird das jeweils nächste k-mer der GtEncseq als GtKmercode zurückgegeben. Wir benutzen diese Funktionalität, um die k-mer-Hashes für den KSEARCH-Algorithmus zu erstellen.
@@ -188,7 +222,11 @@ Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncs
 Die Instanzen der GtRankedList-Klasse sind dynamische Listen fester Größe. In ihnen wird gewährleistet, dass die gespeicherten Objekte in der Liste jeweils die mit dem höchsten Rang sind. Die Größe der Liste sowie die Vergleichsfunktion zur Ermittlung des Ranges sind Klassenvariablen der GtRankedList, zur Eingabe von Objekten in die GtRankedList gibt es eine Klassenfunktion. Um alle in einerGtRankedList gespeicherten Objekte auszugeben, wird die GtRankedList an ein Objekt der Klasse GtRankedListIter übergeben.
 
 \paragraph{GtHashmap}
-Die Objekte der GTHashmap-Klasse sind Hashtables. Wir benutzen sie, um die k-mer Profile der Proteinsequenzen zu speichern.
+Die Objekte der GtHashmap-Klasse sind Hashtables. Wir benutzen sie, um die k-mer
+Profile der Proteinsequenzen zu speichern. Dabei stellt das jeweilige k-mer den
+Schlüssel und die Anzahl des Auftretens des k-mers den zugeordneten Wert dar. Es
+werden also nur Informationen über tatsächlich in der Sequenz vorkommende k-mere
+gespeichert.
 
 \paragraph{GtSuffixerator}
 Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-Objekt einen Suffixarray erstellt. Standardmäßig werden für einen Suffixarray fünf Dateien erstellt, zusätzlich können Dateien für die Burrow-Wheeler-Transformation oder den LCP-Table angelegt werden. Wir verwenden den GtSuffixerator, um aus den query- und database-Dateien Suffixarrays als Eingabe für den SANS-Algorithmus zu erstellen.
@@ -232,11 +270,12 @@ Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.
 Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
 Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
 
-Da durch die unter Abschnitt \ref{sans} vorgestellte Berechnungsvorschrift der Score für ein Sequenzpaar erst bei der Terminierung des ALgorithmus
+Da durch die unter Abschnitt \ref{sans} vorgestellte Berechnungsvorschrift der
+Score für ein Sequenzpaar erst bei der Terminierung des Algorithmus
 fest steht, muss für jeden \emph{SANS} Lauf die gesamte Ergebnismatrix der Dimension $|Q|\cdot|D|$ mitgeführt werden. Die Konstruktoren 
 \emph{result\_matrix\_new\_sans()}, \emph{nbest\_new\_sans()} und  \emph{threshold\_new\_sans()} definieren also jeweils die Ergebnismatrix und allokieren
 den entsprechenden Speicher und rufen dann die \emph{calculate\_results\_sans()} Funktion auf, die die Matrix füllt. Anschließend werden die Daten 
-wiederum Konstruktorspezifisch aufbereitet. Der \emph{matrix}-Konstruktor wird also die gesamte Matrix, der \emph{nbest}-Konstruktor eine
+wiederum konstruktorspezifisch aufbereitet. Der \emph{matrix}-Konstruktor wird also die gesamte Matrix, der \emph{nbest}-Konstruktor eine
 Liste der $n$ besten Scores und der dazugehörigen Sequenzen und der \emph{treshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen
 Schwellwert liegt, zurückgeben.
 
@@ -246,25 +285,27 @@ ganze Ergebnismatrix allokiert werden. Dies nutzen wir aus, indem die Konstrukto
 und  \emph{threshold\_new\_ksearch()} eine ausgabespezifische Ergebnisstruktur erstellen und neben dieser Struktur auch eine Callback-Funktion an 
 die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Wie der Name der Funktion bereits anzeigt, berechnet die Funktion due \emph{KSEARCH}-Scores
 sequenziell und ruft für jeden berechneten Score die übergebene Callback Funktion auf. Dieser wird auch die Ergebnisstruktur übergeben, so dass diese
-der gewünschten Ausgabe entsprechend gefüllt werden kann. Abbildung \ref{kscallback} zeigt die Aufruf-Reihenfolge und die übergebenen Datenstrukturen am
-Beispiel des \emph{result\_matrix\_new\_ksearch} Konstruktors.
+der gewünschten Ausgabe entsprechend gefüllt werden kann. Abbildungen
+\ref{manbes} und \ref{thresh} zeigen Sequenzdiagramme, die die
+Reihenfolge und Struktur der Aufrufe und der entsprechenden Datanstrukturen am
+Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Konstruktors.
 
-\begin{center}
-  \begin{figure}
-    \includegraphics[width = \linewidth]{img/dia3}
-    \caption{Aufruf-Reiehenfolge bei Aufruf des \emph{result\_matrix\_new\_ksearch} Konstruktor. Der Konstruktor übergibt der Funktion zur Score-Berechnung
-      die Callback-Funktion \emph{callback\_matrix()} sowie die \emph{ScoreMatrix} als Ergebnisstruktur. Erst in der Callback-Funktion, die in der 
-      Berechnungsfunktion aufgerufen wird, wird die Ergebnisstruktur wieder zu einer Matrix gecastet und befüllt.}
-    \label{kscallback}
-  \end{figure}
-\end{center}
+%\begin{center}
+%  \begin{figure}
+%    \includegraphics[width = \linewidth]{img/dia3}
+%    \caption{Aufruf-Reiehenfolge bei Aufruf des \emph{result\_matrix\_new\_ksearch} Konstruktor. Der Konstruktor übergibt der Funktion zur Score-Berechnung
+%      die Callback-Funktion \emph{callback\_matrix()} sowie die \emph{ScoreMatrix} als Ergebnisstruktur. Erst in der Callback-Funktion, die in der 
+%      Berechnungsfunktion aufgerufen wird, wird die Ergebnisstruktur wieder zu einer Matrix gecastet und befüllt.}
+%    \label{kscallback}
+%  \end{figure}
+%\end{center}
 
 Für die \emph{matrix}-Option ist diese Rückgabestruktur ein einfaches zweidimensionales Array. Für die \emph{nbest} Option wurde eine in den genometools
 bereits vorhandene Implementierung eines Red-Black-Trees als verkettete Liste genutzt. Diese kann schnell prüfen, ob ein neu generierter Score kleiner oder
-grüßer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
+größer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
 da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
 
-\section{Auswertung}
+\section{Auswertung und Diskussion}
 
 Um die erstellten Implementierungen von KSEARCH und SANS zu testen, wurden einerseits Laufzeitvergleiche mit den bereits existierenden Algorithmen aus \cite{Holm}, sowie Trefferquoten-Vergleiche mit bewährten Algorithmen wie SSEARCH und BLAST durchgeführt. Als Query-Datensatz dienten alle 1083 \textit{Rattus rattus}-Proteine aus der NCBI-Datenbank. Als Datenbank wurde die zur Uniprot gehörende Swissprot gewählt, welche ca. 500 000 Proteine enthält.
 
@@ -316,7 +357,9 @@ Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagr
     \end{center}
   \end{table}
 
-\section{Diskussion}
+\section{Anhang}
+
+bla\_seqscore.h
 
 \addcontentsline{toc}{section}{Literatur}
 \bibliography{quellen}{}
