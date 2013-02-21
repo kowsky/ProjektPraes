@@ -60,8 +60,9 @@ KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(data
 Koskinen und Holm benutzen zu Berechnung der KSEARCH - Scores Suffixarrays, und erreichen so eine theoretische Laufzeitkomplexität von $O(|q_1..q_n| \cdot |d_1..d_n|)$, also in der Gesamtlänge der query- und database-Proteine. Laut Koskinen und Holm liegt der Vorteil der Implementierung mit Suffixarrays darin, dass der Parameter für $k$ frei gewählt werden kann. \\
 %TODO Wie berechnen Koskinen und Holm den KSERACH SCORE??"The KSEARCH algorithm checks all instances of k-mers in the database, and the number of these instances %grows proportionally to the size of the database" [Seite 440]. \\
 Mit der q-gram-Distanz existiert bereits ein Modell, dass auf der Idee basiert, Sequenzpaaren anhand vom gemeinsamen k-meren (bzw. q-Worten)Änhnlichkeitsscores zuzuweisen. Im Gegensatz zum KSEARCH Score ergibt sich der Score bei der q-gram-Distanz aus der Summe der Differenzbeträge $|G_q(query)(w) - G_q(database)(w)|$ der Häufigkeiten der k-mere im query- und database-Protein. Bei der q-gram-Distanz konnte durch die Verwendung von q-Wort Profilen eine Laufzeit von $O(|n|+|m|+\mathcal{A}^q)$ erreicht werden, wobei $|m|$ und $|n|$ die Längen der Proteine, $\mathcal{A}^q$ die Anzahl der möglichen q-Worte darstellen. [Fondations of Sequence Analysis, Seite 43]. Es erschien uns daher sinnvoll, q-Wort-Profile auch für die Berechnung von KSEARCH-Scores zu nutzen.\\
-In unserer Implementierung des KSEARCH-Algorithmus werden daher zunächst die k-mer-Profile aller query-Proteine berechnet, und, um eine lineare Laufzeit zu erhalten, gespeichert. Für ein k-mer- bzw. q-Wort-Profil wird jedes mögliche k-mer durch ein Integer codiert. Ein Array von der Größe $\mathcal{A}^k$ enthält an jeder Position $i$ die Anzahl des dazugehörigen k-mers mit dem Integercode $i$, und wird daher mit Null initialisiert. Durch eine geschickte Codierung können die Codes der einzelnen, in der Sequenz enthaltenen k-mere in konstanter Zeit ermittelt werden, so dass die Berechnung der k-mer-Profile in ${O(|q_1..q_n|)}$ erfolgt. Da der KSEARCH-Score zur Bewertung von Proteinsequenzpaaren genutzt werden soll, ergibt sich bei der Verwendung von Arrays zur Speicherung der k-mer Profile eine erforderliche Größe von $\mathcal{A}^k = 20^k$. Darüber hinaus sind die Proteinsequenzen relativ kurz, so dass die berechneten k-mer Profile nur spärlich besetzt sind. Daher nutzen wir Hashes, um die k-mer-Profile zu speichern. \\
-Wenn die k-mer Profile der query-Proteine berechnet sind, wird für jedes database-Protein das k-mer-Profil als hash angelegt und der KSEARCH-Score mit allen query-Poteinen ermittelt und ausgegeben. Da das k-mer-Profil des database-Proteins nicht noch einmal gebraucht wird, brauchen wir es nicht zu speichern. Das Berechnen des k-mer-Profils eines database-Proteins $d$ geschieht in $O(|d|)$, für alle database-Proteine also in $O(d_1..d_n)$. Dazu kommt die Berechnung der KSEARCH-Scores, die, da das k-mer Profil als Hash vorliegt, für ein einzelnes Proteinpaar linear in der Anzahl unterschiedlicher k-mere im database-Protein $O(kVariety(d))$ ist, für alle Proteinpaare also in $O(|D| \cdot |Q| \cdot kVariety(d))$ liegt. Insgesamt erhalten wir also eine Laufzeitkomplexität von $O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))$.
+Für das Erstellen eines k-mer- bzw. q-Wort-Profils wird jedes mögliche k-mer durch ein Integer codiert. Ein Array von der Größe $\mathcal{A}^k$ enthält an jeder Position $i$ die Anzahl des dazugehörigen k-mers mit dem Integercode $i$, und wird daher mit Null initialisiert. Durch eine geschickte Codierung können die Codes der einzelnen, in der Sequenz enthaltenen k-mere in konstanter Zeit ermittelt werden, so dass die Berechnung der k-mer-Profile in ${O(|q_1..q_n|)}$ erfolgt. Da der KSEARCH-Score zur Bewertung von Proteinsequenzpaaren genutzt werden soll, ergibt sich bei der Verwendung von Arrays zur Speicherung der k-mer Profile eine erforderliche Größe von $\mathcal{A}^k = 20^k$. Darüber hinaus sind die Proteinsequenzen relativ kurz, so dass die berechneten k-mer Profile nur spärlich besetzt sind. Daher nutzen wir Hashes, um die k-mer-Profile zu speichern. \\
+Unsere Implementierung des KSEARCH-Algorithmus erhält die durch das genometool encseq encode konkatenierten und komprimierten query- und database-Proteinsequenzen als Eingabe. Mit dem genometools Modul GtKmercodeiterator werden zunächst die k-mere jedes query-Proteins extrahiert und mit der genometools Funktion GtHashmap in einem Hash gespeichert.
+Dann wird für jedes database-Protein das k-mer-Profil als hash angelegt und der KSEARCH-Score mit allen query-Poteinen ermittelt und ausgegeben. Da das k-mer-Profil des database-Proteins nicht noch einmal gebraucht wird, braucht es nicht gespeichert zu werden. Das Berechnen des k-mer-Profils eines database-Proteins $d$ geschieht in $O(|d|)$, für alle database-Proteine also in $O(d_1..d_n)$. Dazu kommt die Berechnung der KSEARCH-Scores, die, da das k-mer Profil als Hash vorliegt, für ein einzelnes Proteinpaar linear in der Anzahl unterschiedlicher k-mere im database-Protein $O(kVariety(d))$ ist, für alle Proteinpaare also in $O(|D| \cdot |Q| \cdot kVariety(d))$ liegt. Insgesamt erhalten wir also eine Laufzeitkomplexität von $O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))$.
 
 
 
@@ -107,8 +108,8 @@ id(a,b)=\begin{cases}
 \end{equation}
 
 Koskinen und Holm setzen die Fenstergröße h standardmäßig auf die Größe der als Ausgabe gewünschten Anzahl von Proteinpaaren. Das Ziel dabei ist es, jedem der ausgegebenen h Proteine, die Möglichkeit zu geben, im Fenster aufzutauchen, selbst wenn die Suffixe $suffix_{d}$ aller h Proteine beispielsweise vor der Position $i$ des Suffixes $suffix_{qx}$ auftauchen. Da wir mehrere Ausgabevarianten implementieren, haben wir uns dagegen entschieden, den Standardwert für h an die Ausgabe zu koppeln.\\
-Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität linear zur Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist.
-%TODO ECHT?? 
+Zum Erstellen der Suffixarrays aus den query- und database-Proteinen nutzen wir den in den genometools enthaltenen Suffixerator, dessen Laufzeitkomplexität linear zur Länge der konkatenierten Proteinsequenzen $O(|d_1..d_n|+|q_1..q_n|)$ ist. Die Suffixarrays stellen die Eingabe für unseren SANS-Algorithmus dar.
+%TODO ECHT?? -> Laufzeit. 
 Da die endgültigen Scores erst feststehen, wenn alle Suffixe im $suffixarray_Q$ abgehandelt wurden, müssen wir zum Ermitteln der Scores eine Scorematrix der Größe $|Q|\cdot|D|$ anlegen und mit Null initialisieren, wobei $|Q|$ die Anzahl der query-, $|D|$ die Anzahl der database-Proteine beschreibt. Dies benötigt $O(|Q|\cdot|D|)$ Zeit. Jetzt ermitteln wir die Positionen der Suffixe $suffix_{qx}$ in $suffixarray_D$. Dazu laufen wir einmal durch den gesamten $suffixarray_Q$. Da die Suffixe in den Suffixarrays lexikographisch geordnet sind, brauchen wir nicht für jeden $suffix_{qx}$ durch den gesamten $suffixarray_D$ zu laufen, sondern können mit der Suche nach der Position von $suffix_{qx}$ an der Position beginnen, an der wir auch $suffix_{qx-1}$ eingeordnet haben. Diese Position merken wir uns in der Variablen $position$. Damit laufen wir einmal durch den gesamten $suffixarray_Q$ sowie insgesamt genau einmal durch den gesamten $suffixarray_D$ und bleiben so in $O(|q_0..q_n| + |d_0..d_n|)$. Zusätzlich müssen immer, wenn wir eine Position gefunden haben, die Scores $2 \cdot h$ Proteinpaaren in konstanter Zeit aktualisiert werden, so dass sich für die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von  ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
 
 
@@ -141,14 +142,27 @@ Da die endgültigen Scores erst feststehen, wenn alle Suffixe im $suffixarray_Q$
 
 \subsection{Software Architektur}
 
-\subsubsection{Genometools}
+\subsubsection{Genome Tools}
 
-Wir implementieren unsere Algorithmen als Teil der Genometools, einer Sammlung von Werkzeugen und Klassen zur Genomanalyse (\cite{gtools}).
-Im folgenden gehen wir auf die Teile der genometools ein, die wir für unsere Implementierung genutzt haben.
-\begin{itemize}
-  \item encseq: Ein Tool zur Repräsentation von Biosequenzen.
-  \item suffixerator: Ein Tool zur Berechnung von Suffixbäumen aus sequenzdateien oder encseqs.
-\end{itemize}
+Die Genome Tools sind eine freie Sammlung von Tools, Klassen und Modulen zum Analysieren von Genomen und zur entwicklung weiterer C-Programme zur Genomanalyse (\cite{gtools}). Wir implementierten die Algorithmen SANS und KSEARCH innerhalb der GenomeTools-Umgebung und nutzten dabei folgende der durch GenomeTools bereitgestellten Funktionalitäten:
+
+\paragraph{GtToolbox}
+Die GtToolbox ist eine Klasse, die die einzelne Tools enthält. Sie besitzt Methoden zum parsen der übergebenen Parameter und zum Aufrufen des ausgewählten Tools. Wir implementierten unsere Algorithmen SANS und KSEARCH als Tools innerhalb einer GtToolbox gt\_seqscore. 
+
+\paragraph{GtEncseq}
+GtEncseq encode ist ein Tool, um aus ein oder mehreren Sequenzdateien ein GtEncseq-Objekt zu erzeugen. Ein Objekt der Klasse GtEncseq besteht aus den konkatenierten und durch bit-Kompression codierten Sequenzen der Eingabedateien. Je nachdem, welche Funktionalität für ein GtEncseq-Objekt gewünscht ist, werden pro Objekt bis zu vier Dateien angelegt. Mit den verschiedenen Funktionen der GtEncseq-Klasse lassen sich unterschiedliche Eigenschaften der codierten Sequenzen abfragen. Wir verwenden GtEncseq-Objekte als Eingabe für den KSEARCH-Algorithmus.
+
+\paragraph{GtKmercodeiterator}
+Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncseq-Objekt, eine Startposition und eine Länge für k erhalten. Mit den Klassenfunktionen gt\_kmercodeiterator\_encseq\_next() wird das jeweils nächste k-mer der GtEncseq als GtKmercode zurückgegeben. Wir benutzen diese Funktionalität, um die k-mer-Hashes für den KSEARCH-Algorithmus zu erstellen.
+
+\paragraph{GtRankedList und GtRankedListIter}
+Die Instanzen der GtRankedList Klasse sind dynamische Listen fester Größe. In ihnen wird gewährleistet, dass die gespeicherten Objekte in der Liste jeweils die mit dem höchsten Rang sind. Die Größe der Liste sowie die Vergleichsfunktion zur Ermittlung des Ranges sind Klassenvariablen der GtRankedList, zur Eingabe von Objekten in die GtRankedList gibt es eine Klassenfunktion. Um alle in einerGtRankedList gespeicherten Objekte auszugeben, wird die GtRankedList an ein Objekt der Klasse GtRankedListIter übergeben.
+
+\paragraph{GtHashmap}
+
+
+\paragraph{GtSuffixerator}
+Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-Objekt einen Suffixarray erstellt. Standardmäßig werden für einen Suffixarray fünf Dateien erstellt, zusätzlich können Dateien für die Burrow-Wheeler-Transformation oder den LCP-Table angelegt werden. Wir verwenden den GtSuffixerator, um aus den query- und database-Dateien Suffixarrays als Eingabe für den SANS-Algorithmus zu erstellen.
 
 \subsubsection{Struktur}
 
