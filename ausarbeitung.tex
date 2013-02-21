@@ -98,7 +98,7 @@ Dann wird für jedes database-Protein das k-mer-Profil als hash angelegt und der
 \label{sans}
 
 Der SANS-Algorithmus bewertet Proteinpaare, deren Suffixe längste gemeinsame Präfixe haben, mit einem positiven Score. Suffixarrays haben die Eigenschaft, dass Suffixe, die im Suffixarray nebeneinanderliegen, typischerweise lange gemeinsame Präfixe haben. Für die SANS-Scores wird diese Eigenschaft dahingehend genutzt, dass Proteinpaare von query- und database-Proteinen, deren Suffixe im Suffixarray nahe beieinander liegen, einen hohen Score bekommen.\\
-Zur Berechnung der SANS-Scores werden zunächst alle query-Proteine $q_1..q_n$ konkateniert, ebenso alle database-Proteine $d_1..d_n$. Aus den konkatenierten Sequenzen werden die Suffixarrays $Suffixarray_Q$ und $Suffixarray_D$ erstellt. Nun wird für jeden Suffix $suffix_{qx}$ im $Suffixarray_Q$ die Position $i$ im $Suffixarray_D$ ermittelt, an der der Suffix gemäß der lexikographischen Ordnung einzusortieren wäre. Ein Fenster der Größe $2h$ wird so über diese Position gelegt, dass es die $h$ Positionen vor und die $h$ Positionen nach dem hypothetisch einsortierten $suffix_{qx}$ überdeckt. Anhand dieses Fensters werden die SANS-Scores aktualisiert: Jeder Suffix $suffix_{dy}$ eines Proteins $y$ im Fenster erhöht den SANS-Score-Zähler der dazugezugehörigen Proteinkombination $(query_x,database_y)$ um eins. \\
+Zur Berechnung der SANS-Scores werden zunächst alle query-Proteine $q_1..q_n$ konkateniert, ebenso alle database-Proteine $d_1..d_n$. Aus den konkatenierten Sequenzen werden die Suffixarrays \emph{Suffixarray$_Q$} und \emph{Suffixarray$_D$} erstellt. Nun wird für jeden Suffix $suffix_{qx}$ im $Suffixarray_Q$ die Position $i$ im $Suffixarray_D$ ermittelt, an der der Suffix gemäß der lexikographischen Ordnung einzusortieren wäre. Ein Fenster der Größe $2h$ wird so über diese Position gelegt, dass es die $h$ Positionen vor und die $h$ Positionen nach dem hypothetisch einsortierten $suffix_{qx}$ überdeckt. Anhand dieses Fensters werden die SANS-Scores aktualisiert: Jeder Suffix $suffix_{dy}$ eines Proteins $y$ im Fenster erhöht den SANS-Score-Zähler der dazugezugehörigen Proteinkombination $(query_x,database_y)$ um eins. \\
 Wenn für alle Suffixe aus $Suffixarray_Q$ die Scores aktualisiert wurden, kann der SANS-Score ausgegeben werden.
 
 Formal berechnet sich der $SANS(query,database)$ also folgendermaßen:\\
@@ -165,10 +165,10 @@ GtEncseq encode ist ein Tool, um aus ein oder mehreren Sequenzdateien ein GtEncs
 Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncseq-Objekt, eine Startposition und eine Länge für k erhalten. Mit den Klassenfunktionen gt\_kmercodeiterator\_encseq\_next() wird das jeweils nächste k-mer der GtEncseq als GtKmercode zurückgegeben. Wir benutzen diese Funktionalität, um die k-mer-Hashes für den KSEARCH-Algorithmus zu erstellen.
 
 \paragraph{GtRankedList und GtRankedListIter}
-Die Instanzen der GtRankedList Klasse sind dynamische Listen fester Größe. In ihnen wird gewährleistet, dass die gespeicherten Objekte in der Liste jeweils die mit dem höchsten Rang sind. Die Größe der Liste sowie die Vergleichsfunktion zur Ermittlung des Ranges sind Klassenvariablen der GtRankedList, zur Eingabe von Objekten in die GtRankedList gibt es eine Klassenfunktion. Um alle in einerGtRankedList gespeicherten Objekte auszugeben, wird die GtRankedList an ein Objekt der Klasse GtRankedListIter übergeben.
+Die Instanzen der GtRankedList-Klasse sind dynamische Listen fester Größe. In ihnen wird gewährleistet, dass die gespeicherten Objekte in der Liste jeweils die mit dem höchsten Rang sind. Die Größe der Liste sowie die Vergleichsfunktion zur Ermittlung des Ranges sind Klassenvariablen der GtRankedList, zur Eingabe von Objekten in die GtRankedList gibt es eine Klassenfunktion. Um alle in einerGtRankedList gespeicherten Objekte auszugeben, wird die GtRankedList an ein Objekt der Klasse GtRankedListIter übergeben.
 
 \paragraph{GtHashmap}
-
+Die Objekte der GTHashmap-Klasse sind Hashtables. Wir benutzen sie, um die k-mer Profile der Proteinsequenzen zu speichern.
 
 \paragraph{GtSuffixerator}
 Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-Objekt einen Suffixarray erstellt. Standardmäßig werden für einen Suffixarray fünf Dateien erstellt, zusätzlich können Dateien für die Burrow-Wheeler-Transformation oder den LCP-Table angelegt werden. Wir verwenden den GtSuffixerator, um aus den query- und database-Dateien Suffixarrays als Eingabe für den SANS-Algorithmus zu erstellen.
@@ -177,7 +177,7 @@ Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-
 
 Da wir zwei verschiedene Algorithmen implementieren, ist eine logische Trennung wichtig. Da beide jedoch eine ähnliche Funktionalität erfüllen und
 zumindest teilweise gleiche Strukturen beinhalten, würde eine komplette Trennung auf Code-Redundanzen hinauslaufen. Um dieses Dilemma zu lösen, haben wir
-die \emph{Seqscore} Toolbox geschaffen, die die beiden Unter-Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
+die \emph{Seqscore} Toolbox geschaffen, die die beiden Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
 \emph{bla\_seqscore.c}. Dabei ruft jedes Tool abhängig von den ihm übergebenen Ausgabeparametern einen Konstruktor in \emph{bla\_seqscore.c} auf. Es gibt also
 sechs Konstruktoren, eine je Algorithmus und je gewählter Ausgabe. Siehe dazu Abbildung \ref{seqsc}. Auf diese Weise ist sichergestellt, das die 
 Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.
