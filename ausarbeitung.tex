@@ -322,15 +322,14 @@ Die im Vergleich zu SSEARCH und BLAST sehr guten Laufzeiten des SANS-Algorithmus
 konnten in unserer Implementierung nicht erreicht werden (Tab. \ref{runtimes}), sind jedoch für den praktischen Einsatz kurz genug.
 Bei KSEARCH ist dies nicht der Fall. Ist die Laufzeit hier bei kleinen Test-Datensätzen noch vertretbar, steigt sie auf unserem realitätsnahen
 Testdatensatz von 1083 Rattus-Proteinen mit der Swissprot Datenbank auf über 500 Minuten, was unsere KSEARCH Implementierung für den
-praktischen Einsatz ungeeignet macht. Dabei wird der größte Teil der Zeit für Zugriffe auf den Hashtable aufgewendet (siehe Abschnitt \ref{ksearch}). Dies ist in sofern nicht
-überraschend, dass wir uns aufgrund des massiven Speicherplatzbedarfs unserer ursprünglichen Implementierung für einen geringeren
-Speicherplatzverbrauch entschieden, dafür jedoch bewusst Geschwindigkeitseinbußen in Kauf genommen haben.
+praktischen Einsatz ungeeignet macht. Dabei wird der größte Teil der Zeit für Zugriffe auf den Hashtable aufgewendet (siehe Abschnitt \ref{ksearch}). Dies ist insofern nicht
+überraschend, als wir uns aufgrund des massiven Speicherplatzbedarfs unserer ursprünglichen Implementierung für einen geringeren
+Speicherplatzverbrauch entschieden, dafür jedoch bewusst Geschwindigkeitseinbußen in Kauf genommen haben. Diese Einbußen waren jedoch notwendig, da der Hauptspeicher des Testrechners (Tab. \ref{runtimes}) nicht ausgereicht hätte, um KSEARCH mit den angestrebten Testdateien laufen zu lassen. Mit kleineren Datensätzen wurden allerdings kompetitive Laufzeiten erreicht.
 
 Der implementierte SANS-Algorithmus benötigt lange für die Erstellung der Suffix-Arrays, zeigt jedoch bei zunehmender Fensterbreite \textit h 
-eine weniger stark ansteigende Laufzeit als der Referenzalgorithmus. Mit Ausnahme des implementierten KSEARCH zeigen alle Algorithmen eine 
-signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
+eine weniger stark ansteigende Laufzeit als der Referenzalgorithmus.  Im Vergleich mit SSEARCH bzw. BLAST,  zeigten alle Algorithmen, ausser der bereits erwähnten Ausnahme, signifikant schnellere Laufzeiten.
   \begin{table}[h]
-    \caption{Laufzeitenvergleich; Holms entspricht den Algorithmen aus \cite{Holm}, MMF kennzeichnet die selbst implementierten Algorithmen; Berechnungen durchgeführt auf: Intel i5, 4*3.4GHz, 32gb RAM, XUbuntu}
+    \caption{Laufzeitenvergleich; KH entspricht den Algorithmen aus \cite{Holm}, MMF kennzeichnet die selbst implementierten Algorithmen; Berechnungen durchgeführt auf: Intel i5, 4*3.4GHz, 32gb RAM, XUbuntu}
     \begin{center}
     \begin{tabular}{lrrr}
     \hline
@@ -338,11 +337,11 @@ signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
     \hline
     BLAST & 0m12s & 27m23s & 27m35s\\
     SSEARCH & - & 60m0s & 60m0s\\
-    KSEARCH Holms k6 & 1m29s & 0m14s & 1m43s\\
+    KSEARCH KH k6 & 1m29s & 0m14s & 1m43s\\
     KSEARCH MMF k6 & -  & 511m53s & 511m53s\\
-    SANS Holms h16 & 1m29s &  0m15s & 1m44s\\
+    SANS KH h16 & 1m29s &  0m15s & 1m44s\\
     SANS MMF  h16 & 14m19s & 0m36s & 14m55s\\
-    SANS Holms h1000 & 1m29s & 7m7s & 8m36s\\
+    SANS KH h1000 & 1m29s & 7m7s & 8m36s\\
     SANS MMF  h1000 & 14m19s & 1m56s & 16m15s\\
     \hline
     \end{tabular}
@@ -353,29 +352,26 @@ signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
 \subsection{Scores}
 
 Das wichtigste Kriterium bei der Beurteilung der Benutzbarkeit unserer Implementierungen ist die Qualität der Ergebnisse. Um hier Aussagen treffen
-zu können, haben wir einerseits verglichen, wie viele der mit SSEARCH ermittelten Treffer auch mit den jeweiligen Algorithmen wiedergefunden werden konnten; 
-andererseits wurde mittels AUC-Berechnungen die Effizienz der Algorithmen getestet.
+zu können, haben wir einerseits die Sensitivität der Algorithmen verglichen, also ermittelt, wie viele der SSEARCH-Treffer auch mit den jeweiligen Algorithmen wiedergefunden werden konnten. Andererseits wurde mittels AUC-Berechnungen die Effizienz der Algorithmen getestet.
 
 \subsubsection{Vergleich mit SSEARCH}
 
 %SANS
-Um einen ersten Eindruck der Güte unseres SANS Algorithmen zu erhalten, verglichen wir zunächst die besten 1000 Scores unserer Implementierung
-mit der aus \cite{Holm}. Dabei waren $919$ gleiche Sequenzpaare unter diesen am besten bewerteten $1000$. Es sind also $81$ sich unterscheidende
+Um einen ersten Eindruck der Güte unseres SANS Algorithmus zu erhalten, verglichen wir zunächst die besten 1000 Scores unserer Implementierung
+mit denen aus \cite{Holm}. Dabei waren $919$ gleiche Sequenzpaare unter den jeweilig am besten bewerteten $1000$. Es sind also $81$ sich unterscheidende
 Sequenzpaare dabei. Generell konnten wir beobachten, das die gleichen Testsets nicht zu exakt gleichen Scores bei beiden Algorithmen führten. Die
-Abweichungen, die wir hier feststellen konnten, waren jedoch im Vergleich zum Score gering.
+Abweichungen, die wir hier feststellen konnten, waren jedoch relativ zum gesamten Score gering.
 
-Die Scores unterscheiden sich überhaupt, da einige Implementierungsdetails in \cite{Holm} nicht erschöpfend und nachvollziehbar beschrieben wurden,
-und so an einigen Stellen eigene Entscheidungen getroffen werden mussten. Hier ist beispielsweise die Sortierung der Aminosäuren von Proteinsequenzen
-zu nennen. Hier ist sowohl eine rein lexikographische als auch eine nach biologischen Kriterien vorgenommene Sortierung denkbar. Aus unterschiedlichen
-Sortierungen resultiert dabei, dass Suffixe des querys an anderen stellen der Datenbank einsortiert werden. Somit ändern sich natürlich auch die 
-entsprechenden Scores.
-
-Weiterhin wurde, basierend auf \cite{Holm}, die Sensitivität beider Implementierungen verglichen. Dazu wurde zunächst SSEARCH auf den Rattus Query
-Sequenzen mit der Swissprot Datenbank durchgeführt. Diese Referenzergebnisse wurden anschließend in den besten $1000$ Treffern der beiden SANS-Algorithmen
-für jedes Query-Datenbank Paare gesucht. Wie in \cite{Holm} erfolgte eine Aufteilung in Identitätsklassen. Abbildung \ref{barplot} zeigt, dass beide
+Abhängig von der gewählten Implementierung unterscheiden sich die berechneten Scores geringfügig,  da in Koskinen und Holm  \cite{Holm} einige Implementierungsdetails nicht erschöpfend und nachvollziehbar beschrieben wurden,
+und so an einigen Stellen eigene Entscheidungen getroffen werden mussten. Als Beispiel ist die Sortierung der Aminosäuren von Proteinsequenzen
+zu nennen. Hier ist sowohl eine rein lexikographische als auch eine nach biologischen Kriterien vorgenommene Sortierung denkbar. Letztere ist in den GenomeTools \cite{gtools} bei der Erstellung von Suffixarrays als Standard festgelegt. Aus unterschiedlichen
+Sortierungen resultieren dabei unterschiedliche Suffixarrays, was zu verschiedenen Scores führt. Aufgrund des Codes von Koskinen und Holm gehen wir davon aus, dass in der Referenzimplementierung eine lexikographische Sortierung gewählt wurde. 
+Weiterhin wurde, basierend auf der in \cite{Holm} durchgeführten Auswertung, die Sensitivität beider Implementierungen verglichen. Dazu wurden zunächst mit SSEARCH auf den Rattus Query
+Sequenzen mit der Swissprot Datenbank die besten $1000$ Treffer pro Queryprotein ermittelt. Anschließend wurden diese Referenzergebnisse in den besten $1000$ Treffern pro query-Protein der beiden SANS-Algorithmen gesucht, um die true positives festzustellen. Wie in \cite{Holm} erfolgte eine Aufteilung in Identitätsklassen. Abbildung \ref{barplot} zeigt, dass beide
 Implementierungen eine vergleichbare Sensitivität erreichen.
+%TODO
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \includegraphics[width=0.6\textwidth]{img/barplot_beide.png}
     \caption{Sensitivität des selbst implementierten SANS-Algorithmus und dem aus \cite{Holm}. Als Referenz dienen SSearch-Alignments.
@@ -386,21 +382,19 @@ Implementierungen eine vergleichbare Sensitivität erreichen.
 
 \subsubsection{Area under the curve (AUC)}
 
-Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Die AUC ist die Fläche unter der Kurve, also das Integral. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen Wiederfindungsrate (recall) $r$ geplottet wird. Um beide Werte zu erhalten, wird als erstes eine Liste \textit l mit einem Referenz-Algorithmus erstellt, und anschließend anhand dieser Liste \textit p und \textit r des zu testenden Algorithmus ermittelt.\\In Liste \textit l wurden alle BLAST-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, eingetragen. Anschließend wurde mit jedem der ersten 50 Proteine des Query-Datensatzes einzeln eine Suche durchgeführt und die jeweils 50 besten Treffer \textit t ausgegeben. Für diese 50 Treffer wurden dann Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und ein precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele falsch Positiven Treffer auftreten, bis die maximale Anzahl aller richtig Treffer ermittelt ist. Je kleiner also der Wert für AUC, je ineffizienter ist der Algorithmus.\\Zu beachten ist, dass beim Plotten von \textit p gegen \textit r nur ein Punktdiagramm entsteht. Die darin enthaltenen Punkte können nicht interpoliert werden, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.\\Die Ergebnisse sind in Tab. 2 veranschaulicht.
+Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Die AUC ist die Fläche unter der Kurve, also das Integral. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen die Wiederfindungsrate (recall) $r$ geplottet wird. Beide Werte werden errechnet, indem als erstes eine Liste \textit l mit einem Referenz-Algorithmus erstellt, und anschließend anhand dieser Liste \textit p und \textit r des zu testenden Algorithmus ermittelt werden.\\In Liste \textit l wurden alle SSEARCH-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, eingetragen. Anschließend wurde mit den bestem 1000 Treffern \textit t jedes Query-Proteins Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und das precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele false positives auftreten, bis die maximale Anzahl aller richtigen Treffer ermittelt ist. Je kleiner also der Wert für AUC, desto ineffizienter ist der Algorithmus.\\Zu beachten ist, dass beim Plotten von \textit p gegen \textit r nur ein Punktdiagramm entsteht. Die darin enthaltenen Punkte können nicht interpoliert werden, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.\\Die Ergebnisse sind in Tab. 2 veranschaulicht. Es wurden die gleichen Werte für die AUC wie in \cite{Holm} gefunden.
+
   \begin{table}[h]
-    \begin{center}
-    \caption{Werte für die AUC; für die 50 ersten Proteine ; je höher der Wert, je effizienter arbeitet der     Algorithmus}
-    \leftskip=-0.5cm
-    \begin{tabular}{cccccccc}
+  \centering
+    \caption{Werte für die AUC; 1000 besten Treffer für SANS mit SSEARCH verglichen}
+    \begin{tabular}{cc}
       \hline
-      \multicolumn{3}{c}{KSEARCH Holmes} & SANS Holmes &\multicolumn{3}{c}{KSEARCH MMF} & SANS MMF\\
-      \cline{1-3}\cline{5-7}
-      k = 5 & k = 6 & k = 7 & h = 50 & k = 5 & k = 6 & k = 7 & h = 50 \\
+      SANS Holmes & SANS MMF\\
+      h = 1000 & h = 1000\\
       \hline
-      0,0000 & 0,0000 & 0,0000 & 0,0000 & 0,9663 & 0,9678 & 0,9677 & 0,9291 \\
+      0,54 & 0,9291\\
       \hline
     \end{tabular}
-    \end{center}
   \end{table}
 
 \section{Anhang}
