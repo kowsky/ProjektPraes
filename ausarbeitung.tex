@@ -429,22 +429,19 @@ Implementierungen eine vergleichbare Sensitivität erreichen.
 
 \subsubsection{Area under the curve (AUC)}
 
-Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Die AUC ist die Fläche unter der Kurve, also das Integral. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen die Wiederfindungsrate (recall) $r$ geplottet wird. Beide Werte werden errechnet, indem als erstes eine Liste \textit l mit einem Referenz-Algorithmus erstellt, und anschließend anhand dieser Liste \textit p und \textit r des zu testenden Algorithmus ermittelt werden.\\In Liste \textit l wurden alle SSEARCH-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, eingetragen. Anschließend wurde mit den bestem 1000 Treffern \textit t jedes Query-Proteins Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und das precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele false positives auftreten, bis die maximale Anzahl aller richtigen Treffer ermittelt ist. Je kleiner also der Wert für AUC, desto ineffizienter ist der Algorithmus.\\Zu beachten ist, dass beim Plotten von \textit p gegen \textit r nur ein Punktdiagramm entsteht. Die darin enthaltenen Punkte können nicht interpoliert werden, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.\\Die Ergebnisse sind in Tab. 2 veranschaulicht. Es wurde für jedes query-Protein eine AUC erstellt, und daraus ein Durchschnitt erstellt. Die Werte aus \cite{Holm} konnten bestätigt werden.
+Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Die AUC ist die Fläche unter der Kurve, also das Integral. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen die Wiederfindungsrate (recall) $r$ geplottet wird. Beide Werte werden errechnet, indem als erstes eine Liste \textit l mit einem Referenz-Algorithmus erstellt, und anschließend anhand dieser Liste \textit p und \textit r des zu testenden Algorithmus ermittelt werden.\\In Liste \textit l wurden alle SSEARCH-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, eingetragen. Anschließend wurde mit den bestem 1000 Treffern \textit t jedes Query-Proteins Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und das precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele false positives auftreten, bis die maximale Anzahl aller richtigen Treffer ermittelt ist. Je kleiner also der Wert für AUC, desto ineffizienter ist der Algorithmus.\\Zu beachten ist, dass beim Plotten von \textit p gegen \textit r nur ein Punktdiagramm entsteht. Die darin enthaltenen Punkte können nicht interpoliert werden, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.\\Die Ergebnisse sind in Tab. 2 veranschaulicht. Es wurde für jedes query-Protein eine AUC erstellt, und daraus der Durchschnitt berechnet. Die Werte aus \cite{Holm} konnten bestätigt werden.
 
   \begin{table}[h]
-    \begin{center}
-    \caption{Werte für die AUC; für die 50 ersten Proteine ; je höher der Wert, je effizienter arbeitet der     Algorithmus}
-    \leftskip=-0.5cm
-    \begin{tabular}{cccccccc}
+    \centering
+    \caption{Werte für die AUC; je höher der Wert, je effizienter arbeitet der Algorithmus}
+    \begin{tabular}{cc}
       \hline
-      \multicolumn{3}{c}{KSEARCH Holmes} & SANS Holmes &\multicolumn{3}{c}{KSEARCH MMF} & SANS MMF\\
-      \cline{1-3}\cline{5-7}
-      k = 5 & k = 6 & k = 7 & h = 50 & k = 5 & k = 6 & k = 7 & h = 50 \\
+      SANS KH & SANS MMF\\
+      h = 1000 & h = 1000 \\
       \hline
-      0,0000 & 0,0000 & 0,0000 & 0,0000 & 0,9663 & 0,9678 & 0,9677 & 0,9291 \\
+      0,9677 & 0,9291 \\
       \hline
     \end{tabular}
-    \end{center}
   \end{table}
 
 
