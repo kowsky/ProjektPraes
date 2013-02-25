@@ -55,15 +55,16 @@ Diese Anpassung ist bei den vorgestellten Algorithmen nicht möglich.
 
 Der in \cite{Holm} vorgestellte KSEARCH-Algorithmus ermittelt Ähnlichkeitsscores für Proteinpaare anhand der k-mere, die in den Sequenzen beider Proteine vorkommen. Für jedes mögliche k-mer der Länge $k$ wird die Häufigkeit seines Auftretens im query-Protein mit der Häufigkeit seines Auftretens im database-Protein multipliziert. Die Summe dieser Produkte über alle k-mere ergibt den KSEARCH-Score:
 
-\begin{equation}
+\begin{equation*}
 KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(database)(w)
-\end{equation}  
+\end{equation*}  
 \textit{mit $G_k(query)(w)$ = Häufigkeit des Vorkommens des k-mers $w$ im query-Protein}\\ \\
 
+Um durch kurze Tandem Repeats verursachte, künstlich erhöhte Scores zu vermeiden, werden k-mere, die an 1., 2., und 3., bzw. an 1., 3., und 5. Position dieselben Zeichen enthalten, nicht bei der Berechnung des \emph{KSEARCH}-Scores berücksichtigt.\\
 Koskinen und Holm benutzen zu Berechnung der KSEARCH - Scores Suffixarrays, und erreichen so eine theoretische Laufzeitkomplexität von $O(|q_1..q_n| \cdot |d_1..d_n|)$, also in der Gesamtlänge der query- und database-Proteine. Laut Koskinen und Holm liegt der Vorteil der Implementierung mit Suffixarrays darin, dass der Parameter für $k$ frei gewählt werden kann. \\
 %TODO Wie berechnen Koskinen und Holm den KSERACH SCORE??"The KSEARCH algorithm checks all instances of k-mers in the database, and the number of these instances %grows proportionally to the size of the database" [Seite 440]. \\
 Mit der q-gram-Distanz existiert bereits ein Modell, dass auf der Idee basiert,
-Sequenzpaaren anhand vom gemeinsamen k-meren (bzw. q-Worteni) Änhnlichkeitsscores zuzuweisen. 
+Sequenzpaaren anhand vom gemeinsamen k-meren (bzw. q-Worteni) Änhnlichkeits\-scores zuzuweisen. 
 Im Gegensatz zum KSEARCH Score ergibt sich der Score bei der q-gram-Distanz aus der Summe der Differenzbeträge $|G_q(query)(w) - G_q(database)(w)|$ der Häufigkeiten der k-mere im query- und database-Protein. 
 Bei der q-gram-Distanz konnte durch die Verwendung von q-Wort Profilen eine
 Laufzeit von $O(|n|+|m|+\mathcal{A}^q)$ erreicht werden, wobei $|m|$ und $|n|$
@@ -75,24 +76,24 @@ Dann wird für jedes database-Protein das k-mer-Profil als hash angelegt und der
 
 
 
-%\begin{algorithm}
-%  \caption{Pseudocode unserer KSearch-Implementierung}
-%\begin{algorithmic}
-%  \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
-%    \For{each query-protein $q$}  
-%      \State calculate kmer-profile \Comment $O(|q|)$
-%      \State store kmer-profile in hashtable
-%    \EndFor \Comment $\mathbf{O(|q_1..q_n|)}$
-%    \For{each database-protein $d$} 
-%      \State calculate kmer-profile \Comment $O(|d|)$
-%      \For{i in $Q$}
-%        \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
-%        \State output $KSEARCH(d,q)$
-%      \EndFor \Comment $\mathbf{O(|Q| \cdot kVariety(d))}$
-%    \EndFor   \Comment $\mathbf{O(|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
-%  \EndFunction \Comment overall time complexity: $\mathbf{O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
-%\end{algorithmic}
-%%\end{algorithm}
+\begin{algorithm}
+  \caption{Pseudocode unserer KSearch-Implementierung}
+\begin{algorithmic}
+  \Function{KSEARCH}{query-proteins $Q$, database-proteins $D$}
+    \For{each query-protein $q$}  
+      \State calculate kmer-profile \Comment $O(|q|)$
+      \State store kmer-profile in hashtable
+    \EndFor \Comment $\mathbf{O(|q_1..q_n|)}$
+    \For{each database-protein $d$} 
+      \State calculate kmer-profile \Comment $O(|d|)$
+      \For{i in $Q$}
+        \State calculate $KSEARCH(d,q_{i})$ \Comment $O(kVariety(d))$   
+        \State output $KSEARCH(d,q)$
+      \EndFor \Comment $\mathbf{O(|Q| \cdot kVariety(d))}$
+    \EndFor   \Comment $\mathbf{O(|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
+  \EndFunction \Comment overall time complexity: $\mathbf{O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{SANS}
 \label{sans}
@@ -116,19 +117,24 @@ Wenn für alle Suffixe aus \emph{Suffixarray$_Q$} die Scores aktualisiert wurden
 
 Formal berechnet sich der \emph{SANS(query,database)} also folgendermaßen:\\
 
-\begin{equation}
-SANS(query,database) = \sum_{s \in suffixe_q} \sum_{j=-w}^{+w} id(database,Suffixarray_D[position_i(s)  +j].protein) 
-\end{equation}
+\begin{equation*}
+SANS(query,database) = \sum_{s \in suffixe_q} \sum_{j=-h}^{+h} id(database,Suffixarray_D[position_D(s)  +j].protein) 
+\end{equation*}
 
-Mit der Identitätsfunktion
+Mit\\
+\emph{suffixe_q} - alle Suffixe aus $q$,\\
+\emph{position$_D$(s)} - theoretische Position des Suffixes s in \emph{Suffixarray$_D$} 
+\emph{Suffixarray$_D[x]$.protein} - database-Protein, zu dem der Suffix an der Position $x$ des \emph{Suffixarray$_D$} gehört. 
+und der Identitätsfunktion\\
 
-\begin{equation}
+\begin{equation*}
 id(a,b)=\begin{cases}
   1,  & if~a=b\\
   0,  & if~a\ne b\\
 \end{cases}
-\end{equation}
+\end{equation*}
 
+Auch bei der Berechnung des \emph{SANS}-Scores werden Suffixe, die an 1., 2., und 3., bzw. an 1., 3., und 5. Position dieselben Zeichen enthalten, nicht bei der Berechnung des Scores berücksichtigt, um eine künstliche Erhöhung des Scores durch kurze Tandem Repeats zu vermeiden.\\
 Koskinen und Holm setzen die Fenstergröße h standardmäßig auf die Größe der als
 Ausgabe gewünschten Anzahl von Proteinpaaren pro query Protein. 
 Das Ziel dabei ist es, jedem der ausgegebenen h Proteine, die Möglichkeit zu
@@ -162,32 +168,32 @@ die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h +
 |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
 
 
-%\begin{algorithm}
-%  \caption{Pseudocode unserer SANS-Implementierung}
-% \begin{algorithmic}
-%   \Function{SANS}{$query proteins Q, database proteins D, windowsize h$}
-%     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_1..d_n|)$
-%     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_1..q_n|)$
-%     \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
-%     \State initialize $position = 0$
-%     \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
-%       \State  $position$ = \Call {findPosition}{$suffix$, $suffixarray_D$, $position$} 
-%       \State shift $2h$ window over $position$ 
-%       \For{each $suffix_{dx}$ in window}
-%         \State update SANS-scores for  $(q_x,d_x)$
-%       \EndFor \Comment $\mathbf{O(2h)}$
-%     \EndFor \Comment $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
-%    \EndFunction  \Comment{overall time complexity:$\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}   \\
-%    
-%    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
-%      \For{$i$ in $position$..$suffixarray_D$.length}
-%        \If{$suffix$ fits in $suffixarrax_D[i]$}
-%          \State return $i$ 
-%        \EndIf
-%      \EndFor 
-%    \EndFunction
-%  \end{algorithmic}
-%\end{algorithm}
+\begin{algorithm}
+  \caption{Pseudocode unserer SANS-Implementierung}
+ \begin{algorithmic}
+   \Function{SANS}{$query proteins Q, database proteins D, windowsize h$}
+     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_1..d_n|)$
+     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_1..q_n|)$
+     \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
+     \State initialize $position = 0$
+     \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
+       \State  $position$ = \Call {findPosition}{$suffix$, $suffixarray_D$, $position$} 
+       \State shift $2h$ window over $position$ 
+       \For{each $suffix_{dx}$ in window}
+         \State update SANS-scores for  $(q_x,d_x)$
+       \EndFor \Comment $\mathbf{O(2h)}$
+     \EndFor \Comment $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
+    \EndFunction  \Comment{overall time complexity:$\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}   \\
+    
+    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
+      \For{$i$ in $position$..$suffixarray_D$.length}
+        \If{$suffix$ fits in $suffixarrax_D[i]$}
+          \State return $i$ 
+        \EndIf
+      \EndFor 
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
 
 \subsection{Software Architektur}
 
@@ -234,7 +240,7 @@ Je nachdem, welche Ausgabeoption gewählt wurde, wird in der Runner-Funktion des
 Für die Berechnung der Scores wurde für die Algorithmen nur jeweils eine Funktion implementiert, \emph{gt\_calculate\_results\_sans} und \emph{gt\_enumerate\_results\_ksearch}. 
 Jeder der drei Konstruktoren eines Tools greift für die Berechnung der Scores auf die jeweilige Funktion zu.\\
 Da bei der Berechnung der SANS-Scores wie in \ref{sans} erläutert die gesamte Score-Matrix bis zum Ende des Algorithmus mitgeführt werden muss, werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_sans()}, \emph{gt\_seqscore\_nbest\_new\_sans()} und  \emph{gt\_seqscore\_threshold\_new\_sans()} zunächst Ergebnismatrizen angelegt und der entsprechende Speicherplatz von $|Q|\cdot|D|$ alloziert. Die Matrizen werden mit einem Aufruf von \emph{calculate\_results\_sans()} gefüllt und anschließend dem Konstruktoraufruf entsprechend aufbereitet. So gibt der \emph{matrix}-Konstruktor die gesamte Matrix zurück, während im \emph{nbest}-Konstruktor aus den Scores in der Matrix eine GtRankedList der $n$ besten Scores und der dazugehörigen Sequenzen erstellt wird, und im \emph{threshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen Schwellwert liegt, direkt ausgegeben werden.\\
-Wie in Abschnitt \ref{ksearch} ersichtlich, werden beim \emph{KSEARCH}-Algorithmus die Scores der Sequenzpaare nacheinander berechnet, so dass Speicherplatz gespart werden kann. Nur wenn der Benutzer die \emph{-matrix} Rückgabe gewählt hat, muss also tatsächlich der Speicher für die ganze Ergebnismatrix alloziert werden. Daher werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_ksearch()}, \emph{gt\_seqscore\_nbest\_new\_ksearch()} und  \emph{gt\_seqscore\_threshold\_new\_ksearch()} ausgabespezifische Ergebnisstrukturen erstellt und mit einer strukturspezifischen Callback-Funktion an 
+Wie in Abschnitt \ref{ksearch} ersichtlich, werden beim \emph{KSEARCH}-Algorithmus die Scores der Sequenzpaare nacheinander berechnet, so dass Speicherplatz gespart werden kann. Nur wenn der Benutzer die \emph{-matrix} Rückgabe gewählt hat, muss also tatsächlich der Speicher für die ganze Ergebnismatrix alloziert werden. Daher werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_ksearch()},\linebreak \emph{gt\_seqscore\_nbest\_new\_ksearch()} und  \emph{gt\_seqscore\_threshold\_new\_ksearch()} ausgabespezifische Ergebnisstrukturen erstellt und mit einer strukturspezifischen Call\-back-Funktion an 
 die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Diese berechnet sequentiell die Scores und schreibt sie mittels der Callback-Funktion in die übergebene Struktur. Falls das Tool mit der \emph{-threshold} Option aufgerufen wurde, ist das Übergeben einer Ergebnisstruktur nicht notwendig. Die Ergebnisse werden dann durch die Callback-Funktion direkt ausgegeben. Die Abläufe eines KSEARCH Aufrufs sind in den Sequenzdiagrammen \ref{manbes} und \ref{thresh} für die Optionen \emph{-nbest} und \emph{-threshold} verdeutlicht. \\
 
 und\\
