@@ -21,6 +21,7 @@
 \maketitle
 \thispagestyle{empty}
 \begin{abstract}
+In unserer Projektarbeit beschäftigten wir uns mit der Implementierung zweier Algorithmen zur Ähnlichkeitsbewertung von Proteinsequenzen, SANS und KSEARCH, innerhalb der GenomeTools Umgebung. Die von J. Patrik Koskinen und Liisa Holm entwickelten Algorithmen weisen Proteinpaaren aufgrund von gemeinsam enthaltenen k-meren (KSEARCH) bzw. von Nachbarschaften der Proteinsuffixe im Suffixarray (SANS) Ähnlichkeitsscores zu. Koskinen und Holm erreichten so bei kurzen Laufzeiten eine mit Blast vergleichbare Sensitivität bei Proteinen mit 50-100\% Sequenzidentität. Unsere Implementierung der Algorithmen liefert mit der Originalimplementierung vergleichbare Ergebnisse, die von Koskinen und Holm erreichten Laufzeiten konnten jedoch nicht reproduziert werden.
 \end{abstract}
 \newpage
 
@@ -225,40 +226,27 @@ Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-
 
 \subsubsection{Struktur}
 
+Wir implementierten die Algorithmen für den SANS- und den KSEARCH-Score als zwei Tools \emph{gt\_seqscore\_sans.c} und \emph{gt\_seqscore\_ksearch.c} innerhalb der Toolbox \emph{gt\_seqscore} und erhalten so eine logische Trennung. Um Code-Redundanzen zu vermeiden, greifen beide Tools auf eine gemeinsame Codebasis zu, die in \emph{bla\_seqscore.c} implementiert ist. Der Aufruf der Tools erfolgt über die Konsole in der GenomeTools Umgebung und enthält die Toolbox, das Tool, die Namen der zu vergleichenden Encseq-Sequenzen, die Ausgabeoption sowie die Länge der k-mere $k$ (KSEARCH) bzw. die Fensterweite $h$ (SANS) optional kann eine Ausgabedatei angegeben werden.
+%TODO Default-Werte?
+Für beide Tools gibt es drei Ausgabeoptionen, \emph{-matrix}, \emph{-nbest x} und \emph{-threshold x}. Wenn die Option \emph{-matrix} gewählt wird, werden die Scores aller Proteinpaare ausgegeben, bei der Option \emph{-nbest x} nur die $x$ Paare mit den besten Scores, und bei \emph{-threshold x} alle Paare, deren Score größer oder gleich $x$ ist. \\
+Je nachdem, welche Ausgabeoption gewählt wurde, wird in der Runner-Funktion des jeweiligen Tools eine passende Datenstruktur erstellt. Für die \emph{-matrix} Option ist das eine Matrix der Größe $|Q|\cdot|D|$ und für die \emph{-nbest} Option eine GtRankedList. Bei der \emph{-threshold} Option dagegen können die Ergebnisse direkt ausgegeben werden, so dass keine Speicherstruktur angelegt werden muss. Durch den Aufruf eines eintsprechenden Konstruktors aus \emph{bla\_seqscore.c} werden die Strukturen dann gefüllt, so dass für jedes Tool drei verschiedene Konstruktoren existieren:
+\emph{gt\_seqscore\_result\_matrix\_new} für die \emph{-matrix} Option, \emph{gt\_seqscore\_ranked\_list\_new} für die \emph{-nBest} Option und \emph{gt\_seqscore\_threshold\_new} für die \emph{-treshold} Option.
+Für die Berechnung der Scores wurde für die Algorithmen nur jeweils eine Funktion implementiert, \emph{gt\_calculate\_results\_sans} und \emph{gt\_enumerate\_results\_ksearch}. 
+Jeder der drei Konstruktoren eines Tools greift für die Berechnung der Scores auf die jeweilige Funktion zu.\\
+Da bei der Berechnung der SANS-Scores wie in \ref{sans} erläutert die gesamte Score-Matrix bis zum Ende des Algorithmus mitgeführt werden muss, werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_sans()}, \emph{gt\_seqscore\_nbest\_new\_sans()} und  \emph{gt\_seqscore\_threshold\_new\_sans()} zunächst Ergebnismatrizen angelegt und der entsprechende Speicherplatz von $|Q|\cdot|D|$ alloziert. Die Matrizen werden mit einem Aufruf von \emph{calculate\_results\_sans()} gefüllt und anschließend dem Konstruktoraufruf entsprechend aufbereitet. So gibt der \emph{matrix}-Konstruktor die gesamte Matrix zurück, während im \emph{nbest}-Konstruktor aus den Scores in der Matrix eine GtRankedList der $n$ besten Scores und der dazugehörigen Sequenzen erstellt wird, und im \emph{threshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen Schwellwert liegt, direkt ausgegeben werden.\\
+Wie in Abschnitt \ref{ksearch} ersichtlich, werden beim \emph{KSEARCH}-Algorithmus die Scores der Sequenzpaare nacheinander berechnet, so dass Speicherplatz gespart werden kann. Nur wenn der Benutzer die \emph{-matrix} Rückgabe gewählt hat, muss also tatsächlich der Speicher für die ganze Ergebnismatrix alloziert werden. Daher werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_ksearch()}, \emph{gt\_seqscore\_nbest\_new\_ksearch()} und  \emph{gt\_seqscore\_threshold\_new\_ksearch()} ausgabespezifische Ergebnisstrukturen erstellt und mit einer strukturspezifischen Callback-Funktion an 
+die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Diese berechnet sequentiell die Scores und schreibt sie mittels der Callback-Funktion in die übergebene Struktur. Falls das Tool mit der \emph{-threshold} Option aufgerufen wurde, ist das Übergeben einer Ergebnisstruktur nicht notwendig. Die Ergebnisse werden dann durch die Callback-Funktion direkt ausgegeben. Die Abläufe eines KSEARCH Aufrufs sind in den Sequenzdiagrammen \ref{manbes} und \ref{thresh} für die Optionen \emph{-nbest} und \emph{-threshold} verdeutlicht. \\
+
+und\\
+jetzt\\
+nochmal\\
+
 Da wir zwei verschiedene Algorithmen implementieren, ist eine logische Trennung wichtig. Da beide jedoch eine ähnliche Funktionalität erfüllen und
 zumindest teilweise gleiche Strukturen beinhalten, würde eine komplette Trennung auf Code-Redundanzen hinauslaufen. Um dieses Dilemma zu lösen, haben wir
 die \emph{Seqscore} Toolbox geschaffen, die die beiden Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
 \emph{bla\_seqscore.c}. Dabei ruft jedes Tool abhängig von den ihm übergebenen Ausgabeparametern einen Konstruktor in \emph{bla\_seqscore.c} auf. Es gibt also
 sechs Konstruktoren, eine je Algorithmus und je gewählter Ausgabe. Siehe dazu Abbildung \ref{seqsc}. Auf diese Weise ist sichergestellt, das die 
-Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.
-
-\begin{center}
-  \begin{figure}
-    \includegraphics[width = \linewidth]{img/dia2}
-    \caption{Struktur der \emph{bla\_seqscore.c}. Pro von Außen aufrufendem Tool sind drei Konstruktoren vorhanden, die jedoch jeweils wieder die
-    selbe Berechnungsfunktion ausführen.}
-    \label{seqsc}
-  \end{figure}
-\end{center}
-
-\begin{center}
-  \begin{figure}
-    \includegraphics[width = \linewidth]{img/seqscore_seqence_fam.png}
-    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -matrix Option. Die Aufrufe für die -nbest Option sind analog..}
-    \label{manbes}
-  \end{figure}
-\end{center}
-
-\begin{center}
-  \begin{figure}
-    \includegraphics[width = \linewidth]{img/seqscore_sequence_fam_thresh.png}
-    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -threshold Option. Man beachte, dass beim Aufruf der Funktion
-      enumerate\_results\_ksearch() ein NULL-Pointer statt einer Ergebnisstruktur übergeben wird, da Scores, die über dem Grenzwert liegen, sofort ausgegeben
-      werden, ohne in einer Datenstruktur gespeichert zu werden.}
-    \label{thresh}
-  \end{figure}
-\end{center}
-
+Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.\\
 Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
 Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
 
@@ -280,7 +268,37 @@ sequenziell und ruft für jeden berechneten Score die übergebene Callback Funkt
 der gewünschten Ausgabe entsprechend gefüllt werden kann. Abbildungen
 \ref{manbes} und \ref{thresh} zeigen Sequenzdiagramme, die die
 Reihenfolge und Struktur der Aufrufe und der entsprechenden Datanstrukturen am
-Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Konstruktors.
+Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Konstruktors.Für die \emph{matrix}-Option ist diese Rückgabestruktur ein einfaches zweidimensionales Array. Für die \emph{nbest} Option wurde eine in den genometools
+bereits vorhandene Implementierung eines Red-Black-Trees als verkettete Liste genutzt. Diese kann schnell prüfen, ob ein neu generierter Score kleiner oder
+größer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
+da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
+
+
+\begin{center}
+  \begin{figure}
+    \includegraphics[width = \linewidth]{img/dia2}
+    \caption{Struktur der \emph{bla\_seqscore.c}. Für jedes von außen aufrufende Tool sind drei Konstruktoren vorhanden, die jeweils dieselbe Berechnungsfunktion ausführen.}
+    \label{seqsc}
+  \end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}
+    \includegraphics[width = \linewidth]{img/seqscore_seqence_fam.png}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe beim Aufruf von \emph{KSEARCH} mit \emph{-matrix} Option. Die Aufrufe für die \emph{-nbest} Option sind analog.}
+    \label{manbes}
+  \end{figure}
+\end{center}
+
+\begin{center}
+  \begin{figure}
+    \includegraphics[width = \linewidth]{img/seqscore_sequence_fam_thresh.png}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe beim Aufruf von  \emph{KSEARCH} mit \emph{-threshold} Option. Beim Aufruf der Funktion \emph{enumerate\_results\_ksearch()} wird statt einer Ergebnisstruktur ein NULL-Poiter übergeben, da Scores, die über dem threshold liegen, direkt ausgegeben werden können.}
+    \label{thresh}
+  \end{figure}
+\end{center}
+
+
 
 %\begin{center}
 %  \begin{figure}
@@ -292,10 +310,7 @@ Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Kon
 %  \end{figure}
 %\end{center}
 
-Für die \emph{matrix}-Option ist diese Rückgabestruktur ein einfaches zweidimensionales Array. Für die \emph{nbest} Option wurde eine in den genometools
-bereits vorhandene Implementierung eines Red-Black-Trees als verkettete Liste genutzt. Diese kann schnell prüfen, ob ein neu generierter Score kleiner oder
-größer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
-da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
+
 
 \section{Auswertung und Diskussion}
 
