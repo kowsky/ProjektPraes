@@ -125,7 +125,7 @@ Formal berechnet sich der \emph{SANS(query,database)} also folgendermaßen:\\
 
 mit\\
 \emph{suffixe\_q} - alle Suffixe aus $q$,\\
-\emph{position$_D$(s)} - theoretische Position des Suffixes s in \emph{Suffixarray$_D$} \\
+\emph{position$_D$(s)} - theoretische Position des Suffixes $s$ in \emph{Suffixarray$_D$} \\
 \emph{Suffixarray$_D[x]$.protein} - database-Protein, zu dem der Suffix an der Position $x$ des \emph{Suffixarray$_D$} gehört. \\
 
 und der Identitätsfunktion\\
@@ -208,7 +208,7 @@ Analysieren von Genomen und zur Entwicklung weiterer Programme zur Genomanalyse 
 Die GtToolbox ist eine Klasse, die die einzelne Tools enthält. Sie besitzt
 Methoden zum parsen der übergebenen Parameter und zum Aufrufen des ausgewählten
 Tools. Wir implementierten unsere Algorithmen \emph{SANS} und \emph{KSEARCH} als Tools
-innerhalb der GtToolbox gt\_seqscore. 
+innerhalb der GtToolbox \emph{gt\_seqscore}. 
 
 \paragraph{GtEncseq}
 GtEncseq encode ist ein Tool, um aus ein oder mehreren Sequenzdateien ein
@@ -217,7 +217,7 @@ konkatenierten und durch bit-Kompression codierten Sequenzen der Eingabedateien.
 Je nachdem, welche Funktionalitäten für ein GtEncseq-Objekt gewünscht werden, werden pro Objekt bis zu vier Dateien angelegt. Mit den verschiedenen Funktionen der GtEncseq-Klasse lassen sich unterschiedliche Eigenschaften der codierten Sequenzen abfragen. Wir verwenden GtEncseq-Objekte als Eingabe für den \emph{KSEARCH}-Algorithmus.
 
 \paragraph{GtKmercodeiterator}
-Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncseq-Objekt, eine Startposition und eine Länge für $k$ erhalten. Mit den Klassenfunktionen gt\_kmercodeiterator\_encseq\_next() wird das jeweils nächste $k$-mer der GtEncseq als GtKmercode zurückgegeben. Wir benutzen diese Funktionalität, um die $k$-mer-Hashes für den \emph{KSEARCH}-Algorithmus zu erstellen.
+Der GtKmercodeiterator ist eine Klasse, deren Instanzen unter anderem ein GtEncseq-Objekt, eine Startposition und eine Länge für $k$ erhalten. Mit den Klassenfunktionen \emph{gt\_kmercodeiterator\_encseq\_next()} wird das jeweils nächste $k$-mer der GtEncseq als GtKmercode zurückgegeben. Wir benutzen diese Funktionalität, um die $k$-mer-Hashes für den \emph{KSEARCH}-Algorithmus zu erstellen.
 
 \paragraph{GtRankedList und GtRankedListIter}
 Die Instanzen der GtRankedList-Klasse sind dynamische Listen fester Größe. In ihnen wird gewährleistet, dass die gespeicherten Objekte in der Liste jeweils die mit dem höchsten Rang sind. Die Größe der Liste sowie die Vergleichsfunktion zur Ermittlung des Ranges sind Klassenvariablen der GtRankedList, zur Eingabe von Objekten in die GtRankedList gibt es eine Klassenfunktion. Um alle in einerGtRankedList gespeicherten Objekte auszugeben, wird die GtRankedList an ein Objekt der Klasse GtRankedListIter übergeben.
@@ -239,48 +239,11 @@ Wir implementierten die Algorithmen für den \emph{SANS}- und den \emph{KSEARCH}
 Für beide Tools gibt es drei Ausgabeoptionen, \emph{-matrix}, \emph{-nbest x} und \emph{-threshold x}. Wenn die Option \emph{-matrix} gewählt wird, werden die Scores aller Proteinpaare ausgegeben, bei der Option \emph{-nbest x} nur die $x$ Paare mit den besten Scores, und bei \emph{-threshold x} alle Paare, deren Score größer oder gleich $x$ ist. \\
 Je nachdem, welche Ausgabeoption gewählt wurde, wird in der Runner-Funktion des jeweiligen Tools eine passende Datenstruktur erstellt. Für die \emph{-matrix} Option ist das eine Matrix der Größe $|Q|\cdot|D|$ und für die \emph{-nbest} Option eine GtRankedList. Bei der \emph{-threshold} Option dagegen können die Ergebnisse direkt ausgegeben werden, so dass keine Speicherstruktur angelegt werden muss. Durch den Aufruf eines eintsprechenden Konstruktors aus \emph{bla\_seqscore.c} werden die Strukturen dann gefüllt, so dass für jedes Tool drei verschiedene Konstruktoren existieren:
 \emph{gt\_seqscore\_result\_matrix\_new} für die \emph{-matrix} Option, \emph{gt\_seqscore\_ranked\_list\_new} für die \emph{-nBest} Option und \emph{gt\_seqscore\_threshold\_new} für die \emph{-treshold} Option.
-Für die Berechnung der Scores wurde für die Algorithmen nur jeweils eine Funktion implementiert, \emph{gt\_calculate\_results\_sans} und \emph{gt\_enumerate\_results\_ksearch}. 
+Für die Berechnung der Scores wurde für jeden Algorithmus nur jeweils eine Funktion implementiert, \emph{gt\_calculate\_results\_sans} und \emph{gt\_enumerate\_results\_ksearch}. 
 Jeder der drei Konstruktoren eines Tools greift für die Berechnung der Scores auf die jeweilige Funktion zu.\\
-Da bei der Berechnung der SANS-Scores wie in \ref{sans} erläutert die gesamte Score-Matrix bis zum Ende des Algorithmus mitgeführt werden muss, werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_sans()}, \emph{gt\_seqscore\_nbest\_new\_sans()} und  \emph{gt\_seqscore\_threshold\_new\_sans()} zunächst Ergebnismatrizen angelegt und der entsprechende Speicherplatz von $|Q|\cdot|D|$ alloziert. Die Matrizen werden mit einem Aufruf von \emph{calculate\_results\_sans()} gefüllt und anschließend dem Konstruktoraufruf entsprechend aufbereitet. So gibt der \emph{matrix}-Konstruktor die gesamte Matrix zurück, während im \emph{nbest}-Konstruktor aus den Scores in der Matrix eine GtRankedList der $n$ besten Scores und der dazugehörigen Sequenzen erstellt wird, und im \emph{threshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen Schwellwert liegt, direkt ausgegeben werden.\\
+Da bei der Berechnung der \emph{SANS}-Scores wie in \ref{sans} erläutert die gesamte Score-Matrix bis zum Ende des Algorithmus mitgeführt werden muss, werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_sans()}, \emph{gt\_seqscore\_nbest\_new\_sans()} und  \emph{gt\_seqscore\_threshold\_new\_sans()} zunächst Ergebnismatrizen angelegt und der entsprechende Speicherplatz von $|Q|\cdot|D|$ alloziert. Die Matrizen werden mit einem Aufruf von \emph{calculate\_results\_sans()} gefüllt und anschließend dem Konstruktoraufruf entsprechend aufbereitet. So gibt der \emph{matrix}-Konstruktor die gesamte Matrix zurück, während im \emph{nbest}-Konstruktor aus den Scores in der Matrix eine GtRankedList der $x$ besten Scores und der dazugehörigen Sequenzen erstellt wird, und im \emph{threshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen Schwellwert liegt, direkt ausgegeben werden.\\
 Wie in Abschnitt \ref{ksearch} ersichtlich, werden beim \emph{KSEARCH}-Algorithmus die Scores der Sequenzpaare nacheinander berechnet, so dass Speicherplatz gespart werden kann. Nur wenn der Benutzer die \emph{-matrix} Rückgabe gewählt hat, muss also tatsächlich der Speicher für die ganze Ergebnismatrix alloziert werden. Daher werden in den Konstruktoren \emph{gt\_seqscore\_result\_matrix\_new\_ksearch()},\linebreak \emph{gt\_seqscore\_nbest\_new\_ksearch()} und  \emph{gt\_seqscore\_threshold\_new\_ksearch()} ausgabespezifische Ergebnisstrukturen erstellt und mit einer strukturspezifischen Call\-back-Funktion an 
-die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Diese berechnet sequentiell die Scores und schreibt sie mittels der Callback-Funktion in die übergebene Struktur. Falls das Tool mit der \emph{-threshold} Option aufgerufen wurde, ist das Übergeben einer Ergebnisstruktur nicht notwendig. Die Ergebnisse werden dann durch die Callback-Funktion direkt ausgegeben. Die Abläufe eines KSEARCH Aufrufs sind in den Sequenzdiagrammen \ref{manbes} und \ref{thresh} für die Optionen \emph{-nbest} und \emph{-threshold} verdeutlicht. \\
-
-und\\
-jetzt\\
-nochmal\\
-
-Da wir zwei verschiedene Algorithmen implementieren, ist eine logische Trennung wichtig. Da beide jedoch eine ähnliche Funktionalität erfüllen und
-zumindest teilweise gleiche Strukturen beinhalten, würde eine komplette Trennung auf Code-Redundanzen hinauslaufen. Um dieses Dilemma zu lösen, haben wir
-die \emph{Seqscore} Toolbox geschaffen, die die beiden Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
-\emph{bla\_seqscore.c}. Dabei ruft jedes Tool abhängig von den ihm übergebenen Ausgabeparametern einen Konstruktor in \emph{bla\_seqscore.c} auf. Es gibt also
-sechs Konstruktoren, eine je Algorithmus und je gewählter Ausgabe. Siehe dazu Abbildung \ref{seqsc}. Auf diese Weise ist sichergestellt, das die 
-Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.\\
-Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
-Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
-
-Da durch die unter Abschnitt \ref{sans} vorgestellte Berechnungsvorschrift der
-Score für ein Sequenzpaar erst bei der Terminierung des Algorithmus
-fest steht, muss für jeden \emph{SANS} Lauf die gesamte Ergebnismatrix der Dimension $|Q|\cdot|D|$ mitgeführt werden. Die Kon\-struktoren 
-\emph{result\_matrix\_new\_sans()}, \emph{nbest\_new\_sans()} und  \emph{threshold\_new\_sans()} definieren also jeweils die Ergebnismatrix und allokieren
-den entsprechenden Speicher und rufen dann die \emph{calculate\_results\_sans()} Funktion auf, die die Matrix füllt. Anschließend werden die Daten 
-wiederum konstruktorspezifisch aufbereitet. Der \emph{matrix}-Konstruktor wird also die gesamte Matrix, der \emph{nbest}-Konstruktor eine
-Liste der $n$ besten Scores und der dazugehörigen Sequenzen und der \emph{treshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen
-Schwellwert liegt, zurückgeben.
-
-Wie in Abschnitt \ref{ksearch} ersichtlich, kann beim \emph{KSEARCH}-Algorithmus Speicherplatz gespart werden, da die Scores der Sequenzpaare
-nacheinander ausgerechnet werden. Es muss also nur wenn der Benutzer die \emph{matrix}-Rückgabe gewünscht hat tatsächlich der Speicher für die
-ganze Ergebnismatrix allokiert werden. Dies nutzen wir aus, indem die Konstruktoren \emph{result\_matrix\_new\_ksearch()}, \emph{nbest\_new\_ksearch()} 
-und  \emph{threshold\_new\_ksearch()} eine ausgabespezifische Ergebnisstruktur erstellen und neben dieser Struktur auch eine Callback-Funktion an 
-die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Wie der Name der Funktion bereits anzeigt, berechnet die Funktion due \emph{KSEARCH}-Scores
-sequenziell und ruft für jeden berechneten Score die übergebene Callback Funktion auf. Dieser wird auch die Ergebnisstruktur übergeben, so dass diese
-der gewünschten Ausgabe entsprechend gefüllt werden kann. Abbildungen
-\ref{manbes} und \ref{thresh} zeigen Sequenzdiagramme, die die
-Reihenfolge und Struktur der Aufrufe und der entsprechenden Datanstrukturen am
-Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Konstruktors.Für die \emph{matrix}-Option ist diese Rückgabestruktur ein einfaches zweidimensionales Array. Für die \emph{nbest} Option wurde eine in den genometools
-bereits vorhandene Implementierung eines Red-Black-Trees als verkettete Liste genutzt. Diese kann schnell prüfen, ob ein neu generierter Score kleiner oder
-größer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
-da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
-
+die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Diese berechnet sequentiell die Scores und schreibt sie mittels der Callback-Funktion in die übergebene Struktur. Falls das Tool mit der \emph{-threshold} Option aufgerufen wurde, ist das Übergeben einer Ergebnisstruktur nicht notwendig. Die Ergebnisse werden dann durch die Callback-Funktion direkt ausgegeben. Die Abläufe eines \emph{KSEARCH} Aufrufs sind in den Sequenzdiagrammen \ref{manbes} und \ref{thresh} für die Optionen \emph{-nbest} und \emph{-threshold} verdeutlicht. \\
 
 \begin{center}
   \begin{figure}
@@ -322,23 +285,23 @@ da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar
 
 \section{Auswertung und Diskussion}
 
-Um die erstellten Implementierungen von KSEARCH und SANS zu testen, wurden einerseits Laufzeitvergleiche mit den bereits existierenden Algorithmen aus \cite{Holm}, sowie Trefferquoten-Vergleiche mit bewährten Algorithmen wie SSEARCH und BLAST durchgeführt. Als Query-Datensatz dienten alle 1083 \textit{Rattus rattus}-Proteine aus der NCBI-Datenbank. Als Datenbank wurde die zur Uniprot gehörende Swissprot gewählt, welche ca. 500 000 Proteine enthält.
+Um die erstellten Implementierungen von \emph{KSEARCH} und \emph{SANS} zu testen, wurden einerseits Laufzeitvergleiche mit den bereits existierenden Algorithmen aus \cite{Holm}, sowie Trefferquoten-Vergleiche mit bewährten Algorithmen wie SSEARCH und BLAST durchgeführt. Als Query-Datensatz dienten alle 1083 \textit{Rattus rattus}-Proteine aus der NCBI-Datenbank. Als Datenbank wurde die zur Uniprot gehörende Swissprot gewählt, welche ca. 500 000 Proteine enthält.
 
 \subsection{Laufzeiten}
 
 Die im Vergleich zu SSEARCH und BLAST sehr guten Laufzeiten des SANS-Algorithmus aus \cite{Holm}
 konnten in unserer Implementierung nicht erreicht werden (Tab. \ref{runtimes}), sind jedoch für den praktischen Einsatz kurz genug.
-Bei KSEARCH ist dies nicht der Fall. Ist die Laufzeit hier bei kleinen Test-Datensätzen noch vertretbar, steigt sie auf unserem realitätsnahen
-Testdatensatz von 1083 Rattus-Proteinen mit der Swissprot Datenbank auf über 500 Minuten, was unsere KSEARCH Implementierung für den
+Bei \emph{KSEARCH} ist dies nicht der Fall. Ist die Laufzeit hier bei kleinen Test-Datensätzen noch vertretbar, steigt sie auf unserem realitätsnahen
+Testdatensatz von 1083 Rattus-Proteinen mit der Swissprot Datenbank auf über 500 Minuten, was unsere \emph{KSEARCH} Implementierung für den
 praktischen Einsatz ungeeignet macht. Dabei wird der größte Teil der Zeit für Zugriffe auf den Hashtable aufgewendet (siehe Abschnitt \ref{ksearch}). Dies ist in sofern nicht
 überraschend, dass wir uns aufgrund des massiven Speicherplatzbedarfs unserer ursprünglichen Implementierung für einen geringeren
 Speicherplatzverbrauch entschieden, dafür jedoch bewusst Geschwindigkeitseinbußen in Kauf genommen haben.
 
 Der implementierte \emph{SANS}-Algorithmus benötigt lange für die Erstellung der Suffix-Arrays, zeigt jedoch bei zunehmender Fensterbreite \textit h 
-eine weniger stark ansteigende Laufzeit als der Referenzalgorithmus. Mit Ausnahme des implementierten KSEARCH zeigen alle Algorithmen eine 
-signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
+eine weniger stark ansteigende Laufzeit als der Referenzalgorithmus. Mit Ausnahme des implementierten \emph{KSEARCH} zeigen alle Algorithmen eine 
+signifikant schnellere Laufzeit als BLAST und SSEARCH mit einer Laufzeitersparnis von teilweise mehr als 50 \%.
   \begin{table}[h]
-    \caption{Laufzeitenvergleich; Holms entspricht den Algorithmen aus \cite{Holm}, MMF kennzeichnet die selbst implementierten Algorithmen; Berechnungen durchgeführt auf: Intel i5, 4*3.4GHz, 32gb RAM, XUbuntu}
+    \caption{Laufzeitenvergleich; KH entspricht den Algorithmen aus \cite{Holm}, MMF kennzeichnet die selbst implementierten Algorithmen; Berechnungen durchgeführt auf: Intel i5, 4*3.4GHz, 32gb RAM, XUbuntu}
     \begin{center}
     \begin{tabular}{lrrr}
     \hline
@@ -346,11 +309,11 @@ signifikante Verbesserung der Laufzeiten um teilweise mehr als 50 \%.
     \hline
     BLAST & 0m12s & 27m23s & 27m35s\\
     SSEARCH & - & 60m0s & 60m0s\\
-    KSEARCH Holms k6 & 1m29s & 0m14s & 1m43s\\
+    KSEARCH KH k6 & 1m29s & 0m14s & 1m43s\\
     KSEARCH MMF k6 & -  & 511m53s & 511m53s\\
-    SANS Holms h16 & 1m29s &  0m15s & 1m44s\\
+    SANS KH h16 & 1m29s &  0m15s & 1m44s\\
     SANS MMF  h16 & 14m19s & 0m36s & 14m55s\\
-    SANS Holms h1000 & 1m29s & 7m7s & 8m36s\\
+    SANS KH h1000 & 1m29s & 7m7s & 8m36s\\
     SANS MMF  h1000 & 14m19s & 1m56s & 16m15s\\
     \hline
     \end{tabular}
@@ -367,7 +330,7 @@ andererseits wurde mittels AUC-Berechnungen die Effizienz der Algorithmen getest
 \subsubsection{Vergleich mit SSEARCH}
 
 %SANS
-Um einen ersten Eindruck der Güte unseres SANS Algorithmen zu erhalten, verglichen wir zunächst die besten 1000 Scores unserer Implementierung
+Um einen ersten Eindruck der Güte unseres \emph{SANS} Algorithmen zu erhalten, verglichen wir zunächst die besten 1000 Scores unserer Implementierung
 mit der aus \cite{Holm}. Dabei waren $919$ gleiche Sequenzpaare unter diesen am besten bewerteten $1000$. Es sind also $81$ sich unterscheidende
 Sequenzpaare dabei. Generell konnten wir beobachten, das die gleichen Testsets nicht zu exakt gleichen Scores bei beiden Algorithmen führten. Die
 Abweichungen, die wir hier feststellen konnten, waren jedoch im Vergleich zum Score gering.
