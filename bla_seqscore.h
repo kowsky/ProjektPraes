@@ -85,7 +85,7 @@ GtSeqScoreResultMatrix gt_seqscore_result_matrix_new_sans(Suffixarray suf_q,
                                                           Suffixarray suf_s,
                                                           unsigned int h,
                                                           GtError* err);
-/* Returns a <GtSeqScoreResultMatrix> containing all iKSEARCH scores of
+/* Returns a <GtSeqScoreResultMatrix> containing all KSEARCH scores of
    sequences of query <suf_q> and database <suf_s>. The wordsize for the k-mer
    profiles is <k>. Returns NULL on error, <err> is set accordingly.*/
 GtSeqScoreResultMatrix gt_seqscore_result_matrix_new_ksearch(
