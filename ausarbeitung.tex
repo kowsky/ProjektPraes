@@ -14,7 +14,7 @@
 
 \setlength{\parindent}{0pt}
 
-\title{Proteinsequenz-Vergleich mit KSEARCH und SANS}
+\title{Proteinsequenz-Vergleich mit \emph{KSEARCH} und \emph{SANS}}
 \author{Meike Bruns, Florian Markowsky, Michael Spohn}
 
 \begin{document}
@@ -22,9 +22,7 @@
 \maketitle
 \thispagestyle{empty}
 \begin{abstract}
-
-In unserer Projektarbeit beschäftigten wir uns mit der Implementierung zweier Algorithmen zur Ähnlichkeitsbewertung von Proteinsequenzen, SANS und KSEARCH, innerhalb der GenomeTools Umgebung. Die von J. Patrik Koskinen und Liisa Holm entwickelten Algorithmen weisen Proteinpaaren aufgrund von gemeinsam enthaltenen k-meren (KSEARCH) bzw. von Nachbarschaften der Proteinsuffixe im Suffixarray (SANS) Ähnlichkeitsscores zu. Koskinen und Holm erreichten so bei kurzen Laufzeiten eine mit BLAST vergleichbare Sensitivität bei Proteinen mit 50-100\% Sequenzidentität. Unsere Implementierung der Algorithmen liefert mit der Originalimplementierung vergleichbare Ergebnisse, die von Koskinen und Holm erreichten Laufzeiten konnten jedoch nicht reproduziert werden.
-
+In unserer Projektarbeit beschäftigten wir uns mit der Implementierung zweier Algorithmen zur Ähnlichkeitsbewertung von Proteinsequenzen, \emph{SANS} und \emph{KSEARCH}, innerhalb der GenomeTools Umgebung. Die von J. Patrik Koskinen und Liisa Holm entwickelten Algorithmen weisen Proteinpaaren aufgrund von gemeinsam enthaltenen $k$-meren (\emph{KSEARCH}) bzw. von Nachbarschaften der Proteinsuffixe im Suffixarray (\emph{SANS}) Ähnlichkeitsscores zu. Koskinen und Holm erreichten so bei kurzen Laufzeiten eine mit BLAST vergleichbare Sensitivität bei Proteinen mit 50-100\% Sequenzidentität. Unsere Implementierung der Algorithmen liefert mit der Originalimplementierung vergleichbare Ergebnisse, die von Koskinen und Holm erreichten Laufzeiten konnten jedoch nicht reproduziert werden.
 \end{abstract}
 \newpage
 
@@ -46,7 +44,7 @@ Dadurch, dass sie ganz ohne Alignment auskommen, sind sie meist sehr schnell und
 Dass die berechneten Scores keine detaillierten Informationen darüber enthalten,
 wo zwei Sequenzen gleich und wo verschieden sind, ist in nearest-neighbor-Analysen wie z.B. dem Clustering kein Nachteil. 
 Hier ist vor allem von Interesse, dass hohe Scores ein verlässlicher Indikator für eine hohe Ähnlichkeit sind.\\
-Im folgenden stellen wir unsere Implementierung von zwei von J. Patrik Koskinen und Liisa Holm entwickelten Algorithmen - SANS (Suffix Array Neighborhood Search) und KSEARCH - vor, die Feature-Vektor basierte Scores für Protein-Sequenzpaare ermitteln. Koskinen und Holm erreichten mit SANS für Proteinsequenzen, deren Sequenzidentität zwischen 50 und 100\% liegt, eine mit Blast vergleichbare Sensitivität. In Abhängigkeit vom gewählten $k$-Wert konnten mit KSEARCH ähnliche Sensitivitätswerte erreicht werden. Dieses Ergebnis ist für die Vergleiche von Proteinsequenzen überraschend, denn wegen der hohen Mutationswahrscheinlichkeiten einzelner Aminosäuren werden in BLAST zur Bestimmung von Ähnlichkeiten zwischen Proteinen Substitutionsmatrizen verwendet, die die Mutationswahrscheinlichkeiten der Aminosäuren in die Ähnlich\-keitsberechnung einbeziehen. 
+Im folgenden stellen wir unsere Implementierung von zwei von J. Patrik Koskinen und Liisa Holm entwickelten Algorithmen - \emph{SANS} (Suffix Array Neighborhood Search) und \emph{KSEARCH} - vor, die Feature-Vektor basierte Scores für Protein-Sequenzpaare ermitteln. Koskinen und Holm erreichten mit \emph{SANS} für Proteinsequenzen, deren Sequenzidentität zwischen 50 und 100\% liegt, eine mit Blast vergleichbare Sensitivität. In Abhängigkeit vom gewählten $k$-Wert konnten mit \emph{KSEARCH} ähnliche Sensitivitätswerte erreicht werden. Dieses Ergebnis ist für die Vergleiche von Proteinsequenzen überraschend, denn wegen der hohen Mutationswahrscheinlichkeiten einzelner Aminosäuren werden in BLAST zur Bestimmung von Ähnlichkeiten zwischen Proteinen Substitutionsmatrizen verwendet, die die Mutationswahrscheinlichkeiten der Aminosäuren in die Ähnlich\-keitsberechnung einbeziehen. 
 Diese Anpassung ist bei den vorgestellten Algorithmen nicht möglich.
 
 
@@ -55,11 +53,10 @@ Diese Anpassung ist bei den vorgestellten Algorithmen nicht möglich.
 \subsection{KSEARCH}
 \label{ksearch}
 
-Der in \cite{Holm} vorgestellte KSEARCH-Algorithmus ermittelt Ähnlichkeitsscores für Proteinpaare anhand der $k$-mere, die in den Sequenzen beider Proteine vorkommen. Für jedes mögliche $k$-mer der Länge $k$ wird die Häufigkeit seines Auftretens im query-Protein mit der Häufigkeit seines Auftretens im database-Protein multipliziert. Die Summe dieser Produkte über alle $k$-mere ergibt den KSEARCH-Score:
+Der in \cite{Holm} vorgestellte \emph{KSEARCH}-Algorithmus ermittelt Ähnlichkeitsscores für Proteinpaare anhand der $k$-mere, die in den Sequenzen beider Proteine vorkommen. Für jedes mögliche $k$-mer der Länge $k$ wird die Häufigkeit seines Auftretens im query-Protein mit der Häufigkeit seines Auftretens im database-Protein multipliziert. Die Summe dieser Produkte über alle $k$-mere ergibt den \emph{KSEARCH}-Score:
 
-\begin{equation}
-KSEARCH(query,database) = \sum_{w \in \mathcal A^k} G_k(query)(w) \cdot G_k(database)(w)
-
+\begin{equation*}
+\text{\emph{KSEARCH(query,database)}} = \sum_{w \in \mathcal A^k} G_k(\text{\emph{query}})(w) \cdot G_k(\text{\emph{database}})(w)
 \end{equation*}  
 mit
 \emph{ $G_k(query)(w)$} = Häufigkeit des Vorkommens des $k$-mers $w$ im query-Protein\\ \\
@@ -70,13 +67,14 @@ Mit der q-gram-Distanz existiert bereits ein Modell, dass auf der Idee basiert,
 Sequenzpaaren anhand vom gemeinsamen $k$-meren (bzw. $q$-Worten) Änhnlichkeits\-scores zuzuweisen. 
 Im Gegensatz zum \emph{KSEARCH} Score ergibt sich der Score bei der q-gram-Distanz aus der Summe der Differenzbeträge $|G_q(query)(w) - G_q(database)(w)|$ der Häufigkeiten der $k$-mere im query- und database-Protein. 
 Bei der q-gram-Distanz konnte durch die Verwendung von $q$-Wort Profilen eine
-
 Laufzeit von $O(|n|+|m|+\mathcal{A}^q)$ erreicht werden, wobei $|m|$ und $|n|$
 die Längen der Proteine, $\mathcal{A}^q$ die Anzahl der möglichen q-Worte
 darstellen \cite{GSA}. Es erschien uns daher sinnvoll, q-Wort-Profile auch für die Berechnung von \emph{KSEARCH}-Scores zu nutzen.\\
 Für das Erstellen eines $k$-mer- bzw. q-Wort-Profils wird jedes mögliche $k$-mer durch einen Integerwert codiert. Ein Array von der Größe $\mathcal{A}^k$ enthält an jeder Position $i$ die Anzahl des dazugehörigen $k$-mers mit dem Integercode $i$, und wird daher mit Null initialisiert. Durch eine geschickte Codierung können die Codes der einzelnen, in der Sequenz enthaltenen $k$-mere in konstanter Zeit ermittelt werden, so dass die Berechnung der $k$-mer-Profile in ${O(|q_1..q_n|)}$ erfolgt. Da der \emph{KSEARCH}-Score zur Bewertung von Proteinsequenzpaaren genutzt werden soll, ergibt sich bei der Verwendung von Arrays zur Speicherung der $k$-mer Profile der erforderliche Speicherplatz von $\mathcal{A}^k = 20^k$ pro Profil. Darüber hinaus sind die Proteinsequenzen relativ kurz, so dass die berechneten $k$-mer Profile nur spärlich besetzt sind. Daher nutzen wir Hashes, um die $k$-mer-Profile zu speichern. \\
 Unsere Implementierung des \emph{KSEARCH}-Algorithmus erhält die durch das GenomeTool encseq encode konkatenierten und komprimierten query- und database-Proteinsequenzen als Eingabe. Mit dem GenomeTools Modul GtKmercodeiterator werden zunächst die $k$-mere jedes query-Proteins extrahiert und mit der GenomeTools Funktion GtHashmap in einem Hash gespeichert.
 Dann wird für jedes database-Protein das $k$-mer-Profil als Hash angelegt und der \emph{KSEARCH}-Score mit allen query-Poteinen ermittelt und ausgegeben. Da das $k$-mer-Profil des database-Proteins nicht noch einmal gebraucht wird, braucht es nicht gespeichert zu werden. Das Berechnen des $k$-mer-Profils eines database-Proteins $d$ geschieht in $O(|d|)$, für alle database-Proteine also in $O(d_1..d_n)$. Dazu kommt die Berechnung der \emph{KSEARCH}-Scores, die, da das $k$-mer Profil als Hash vorliegt, für ein einzelnes Proteinpaar linear in der Anzahl unterschiedlicher $k$-mere im database-Protein $O(kVariety(d))$ ist, für alle Proteinpaare also in $O(|D| \cdot |Q| \cdot kVariety(d))$ liegt. Insgesamt erhalten wir also eine Laufzeitkomplexität von $O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))$.
+
+
 
 \begin{algorithm}
   \caption{Pseudocode unserer \emph{KSEARCH}-Implementierung}
@@ -113,12 +111,11 @@ Position $i$ im \emph{Suffixarray$_D$} ermittelt, an der der Suffix gemäß der 
 Ein Fenster der Größe $2h$ wird so über diese Position gelegt, dass es die $h$
 Positionen vor und die $h$ Positionen nach dem hypothetisch einsortierten
 \emph{suffix$_{qx}$} überdeckt. 
-Anhand dieses Fensters werden die SANS-Scores aktualisiert: 
+Anhand dieses Fensters werden die \emph{SANS}-Scores aktualisiert: 
 Jeder Suffix \emph{suffix$_{dy}$} eines Proteins $y$ im Fenster erhöht den  \emph{SANS}-Score-Zähler der dazugezugehörigen Proteinkombination $(query_x,database_y)$ um eins. \\
 Wenn für alle Suffixe aus \emph{Suffixarray$_Q$} die Scores aktualisiert wurden, kann der  \emph{SANS}-Score ausgegeben werden.
 
 Formal berechnet sich der \emph{SANS(query,database)} also folgendermaßen:\\
-
 
 \begin{equation*}
   \begin{split}
@@ -133,14 +130,12 @@ mit\\
 
 und der Identitätsfunktion\\
 
-
-\begin{equation}
+\begin{equation*}
 id(a,b)=\begin{cases}
   1,  & if~a=b\\
   0,  & if~a\ne b\\
 \end{cases}
-\end{equation}
-
+\end{equation*}
 
 Auch bei der Berechnung des \emph{SANS}-Scores werden Suffixe, die an 1., 2., und 3., bzw. an 1., 3., und 5. Position dieselben Zeichen enthalten, nicht bei der Berechnung des Scores berücksichtigt, um eine künstliche Erhöhung des Scores durch kurze Tandem Repeats zu vermeiden.\\
 Koskinen und Holm setzen die Fenstergröße $h$ standardmäßig auf die Größe der als
@@ -175,36 +170,36 @@ die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h +
 |d_0..d_n|)}$ ergibt. Zusammen erhalten wir also eine Laufzeitkomplexität von ${O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$
 
 
-%\begin{algorithm}
-%  \caption{Pseudocode unserer SANS-Implementierung}
-% \begin{algorithmic}
-%   \Function{SANS}{$query proteins Q, database proteins D, windowsize h$}
-%     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_1..d_n|)$
-%     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_1..q_n|)$
-%     \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
-%     \State initialize $position = 0$
-%     \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
-%       \State  $position$ = \Call {findPosition}{$suffix$, $suffixarray_D$, $position$} 
-%       \State shift $2h$ window over $position$ 
-%       \For{each $suffix_{dx}$ in window}
-%         \State update SANS-scores for  $(q_x,d_x)$
-%       \EndFor \Comment $\mathbf{O(2h)}$
-%     \EndFor \Comment $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
-%    \EndFunction  \Comment{overall time complexity:$\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}   \\
-%    
-%    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
-%      \For{$i$ in $position$..$suffixarray_D$.length}
-%        \If{$suffix$ fits in $suffixarrax_D[i]$}
-%          \State return $i$ 
-%        \EndIf
-%      \EndFor 
-%    \EndFunction
-%  \end{algorithmic}
-%\end{algorithm}
+\begin{algorithm}
+  \caption{Pseudocode unserer \emph{SANS}-Implementierung}
+ \begin{algorithmic}
+   \Function{SANS}{$query proteins Q, database proteins D, windowsize h$}
+     \State calculate $suffixarray_Q$ for query proteins \Comment $O(|d_1..d_n|)$
+     \State calculate $suffixarray_D$ for database proteins \Comment $O(|q_1..q_n|)$
+     \State initialize score matrix \Comment $O(|Q|\cdot|D|)$
+     \State initialize $position = 0$
+     \For{each $suffix_{qx}$ from 0 - $suffixarray_Q$.length}
+       \State  $position$ = \Call {findPosition}{$suffix$, $suffixarray_D$, $position$} 
+       \State shift $2h$ window over $position$ 
+       \For{each $suffix_{dx}$ in window}
+         \State update SANS-scores for  $(q_x,d_x)$
+       \EndFor \Comment $\mathbf{O(2h)}$
+     \EndFor \Comment $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
+    \EndFunction  \Comment{overall time complexity:$\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}   \\
+    
+    \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
+      \For{$i$ in $position$..$suffixarray_D$.length}
+        \If{$suffix$ fits in $suffixarrax_D[i]$}
+          \State return $i$ 
+        \EndIf
+      \EndFor 
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
 
 \subsection{Software Architektur}
 
-\subsubsection{Genome Tools}
+\subsubsection{GenomeTools}
 
 Die GenomeTools sind eine freie Sammlung von Tools, Klassen und Modulen zum
 Analysieren von Genomen und zur Entwicklung weiterer Programme zur Genomanalyse \cite{gtools}. Wir implementierten die Algorithmen \emph{SANS} und \emph{KSEARCH} innerhalb der GenomeTools-Umgebung und nutzten dabei folgende der durch GenomeTools bereitgestellten Funktionalitäten:
@@ -239,8 +234,7 @@ Der GtSuffixerator ist ein Tool, das aus einer Sequenzdatei oder einem GtEncseq-
 
 \subsubsection{Struktur}
 
-
-Wir implementierten die Algorithmen für den \emph{SANS}- und den \emph{KSEARCH}-Score als zwei Tools \emph{gt\_seqscore\_sans.c} und \emph{gt\_seqscore\_ksearch.c} innerhalb der Toolbox \emph{gt\_seqscore} und erhalten so eine logische Trennung. Um Code-Redundanzen zu vermeiden, greifen beide Tools auf eine gemeinsame Codebasis zu, die in \emph{bla\_seqscore.c} implementiert ist. Der Aufruf der Tools erfolgt über die Konsole in der GenomeTools Umgebung und enthält die Toolbox, das Tool, die Namen der zu vergleichenden Encseq-Sequenzen, die Ausgabeoption sowie die Länge der k-mere $k$ (\emph{KSEARCH}) bzw. die Fensterweite $h$ (\emph{SANS}) optional kann eine Ausgabedatei angegeben werden.
+Wir implementierten die Algorithmen für den \emph{SANS}- und den \emph{KSEARCH}-Score als zwei Tools \emph{gt\_seqscore\_sans.c} und \emph{gt\_seqscore\_ksearch.c} innerhalb der Toolbox \emph{gt\_seqscore} und erhalten so eine logische Trennung. Um Code-Redundanzen zu vermeiden, greifen beide Tools auf eine gemeinsame Codebasis zu, die in \emph{bla\_seqscore.c} implementiert ist. Der Aufruf der Tools erfolgt über die Konsole in der GenomeTools Umgebung und enthält die Toolbox, das Tool, die Namen der zu vergleichenden Encseq-Sequenzen, die Ausgabeoption sowie die Länge der $k$-mere $k$ (\emph{KSEARCH}) bzw. die Fensterweite $h$ (\emph{SANS}) optional kann eine Ausgabedatei angegeben werden.
 %TODO Default-Werte?
 Für beide Tools gibt es drei Ausgabeoptionen, \emph{-matrix}, \emph{-nbest x} und \emph{-threshold x}. Wenn die Option \emph{-matrix} gewählt wird, werden die Scores aller Proteinpaare ausgegeben, bei der Option \emph{-nbest x} nur die $x$ Paare mit den besten Scores, und bei \emph{-threshold x} alle Paare, deren Score größer oder gleich $x$ ist. \\
 Je nachdem, welche Ausgabeoption gewählt wurde, wird in der Runner-Funktion des jeweiligen Tools eine passende Datenstruktur erstellt. Für die \emph{-matrix} Option ist das eine Matrix der Größe $|Q|\cdot|D|$ und für die \emph{-nbest} Option eine GtRankedList. Bei der \emph{-threshold} Option dagegen können die Ergebnisse direkt ausgegeben werden, so dass keine Speicherstruktur angelegt werden muss. Durch den Aufruf eines eintsprechenden Konstruktors aus \emph{bla\_seqscore.c} werden die Strukturen dann gefüllt, so dass für jedes Tool drei verschiedene Konstruktoren existieren:
@@ -260,7 +254,6 @@ zumindest teilweise gleiche Strukturen beinhalten, würde eine komplette Trennun
 die \emph{Seqscore} Toolbox geschaffen, die die beiden Tools \emph{KSEARCH} und \emph{SANS} enthält. Diese greifen auf die selbe Codebasis zu, 
 \emph{bla\_seqscore.c}. Dabei ruft jedes Tool abhängig von den ihm übergebenen Ausgabeparametern einen Konstruktor in \emph{bla\_seqscore.c} auf. Es gibt also
 sechs Konstruktoren, eine je Algorithmus und je gewählter Ausgabe. Siehe dazu Abbildung \ref{seqsc}. Auf diese Weise ist sichergestellt, das die 
-
 Ergebnisstrukturen betreffender Code von beiden Algorithmen genutzt werden kann.\\
 Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
 Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
@@ -289,12 +282,10 @@ größer als das bisher kleinste Element ist und entsprechend verfahren. Im Fall
 da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
 
 
-
 \begin{center}
   \begin{figure}
     \includegraphics[width = \linewidth]{img/dia2}
-    \caption{Struktur der \emph{bla\_seqscore.c}. Pro von Außen aufrufendem Tool sind drei Konstruktoren vorhanden, die jedoch jeweils wieder die
-    selbe Berechnungsfunktion ausführen.}
+    \caption{Struktur der \emph{bla\_seqscore.c}. Für jedes von außen aufrufende Tool sind drei Konstruktoren vorhanden, die jeweils dieselbe Berechnungsfunktion ausführen.}
     \label{seqsc}
   \end{figure}
 \end{center}
@@ -302,7 +293,7 @@ da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar
 \begin{center}
   \begin{figure}
     \includegraphics[width = \linewidth]{img/seqscore_seqence_fam.png}
-    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -matrix Option. Die Aufrufe für die -nbest Option sind analog..}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe beim Aufruf von \emph{KSEARCH} mit \emph{-matrix} Option. Die Aufrufe für die \emph{-nbest} Option sind analog.}
     \label{manbes}
   \end{figure}
 \end{center}
@@ -310,35 +301,12 @@ da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar
 \begin{center}
   \begin{figure}
     \includegraphics[width = \linewidth]{img/seqscore_sequence_fam_thresh.png}
-    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe bei Aufruf von Ksearch mit -threshold Option. Man beachte, dass beim Aufruf der Funktion
-      enumerate\_results\_ksearch() ein NULL-Pointer statt einer Ergebnisstruktur übergeben wird, da Scores, die über dem Grenzwert liegen, sofort ausgegeben
-      werden, ohne in einer Datenstruktur gespeichert zu werden.}
+    \caption{Sequenzdiagram der Abfolge der Funktionsaufrufe beim Aufruf von  \emph{KSEARCH} mit \emph{-threshold} Option. Beim Aufruf der Funktion \emph{enumerate\_results\_ksearch()} wird statt einer Ergebnisstruktur ein NULL-Poiter übergeben, da Scores, die über dem threshold liegen, direkt ausgegeben werden können.}
     \label{thresh}
   \end{figure}
 \end{center}
 
-Pro Algorithmus wurde eine tatsächliche Berechnungsfunktion implementiert. Auf diese wird aus den drei Ergebnisstruktur abhängigen Konstruktoren des jeweiligen
-Algorithmus zugegriffen. Wir gehen zunächst auf den \emph{SANS} Algorithmus ein.
 
-Da durch die unter Abschnitt \ref{sans} vorgestellte Berechnungsvorschrift der
-Score für ein Sequenzpaar erst bei der Terminierung des Algorithmus
-fest steht, muss für jeden \emph{SANS} Lauf die gesamte Ergebnismatrix der Dimension $|Q|\cdot|D|$ mitgeführt werden. Die Konstruktoren 
-\emph{result\_matrix\_new\_sans()}, \emph{nbest\_new\_sans()} und  \emph{threshold\_new\_sans()} definieren also jeweils die Ergebnismatrix und allokieren
-den entsprechenden Speicher und rufen dann die \emph{calculate\_results\_sans()} Funktion auf, die die Matrix füllt. Anschließend werden die Daten 
-wiederum konstruktorspezifisch aufbereitet. Der \emph{matrix}-Konstruktor wird also die gesamte Matrix, der \emph{nbest}-Konstruktor eine
-Liste der $n$ besten Scores und der dazugehörigen Sequenzen und der \emph{treshold}-Konstruktor alle Sequenzpaare, deren Score über dem gegebenen
-Schwellwert liegt, zurückgeben.
-
-Wie in Abschnitt \ref{ksearch} ersichtlich, kann beim \emph{KSEARCH}-Algorithmus Speicherplatz gespart werden, da die Scores der Sequenzpaare
-nacheinander ausgerechnet werden. Es muss also nur wenn der Benutzer die \emph{matrix}-Rückgabe gewünscht hat tatsächlich der Speicher für die
-ganze Ergebnismatrix allokiert werden. Dies nutzen wir aus, indem die Konstruktoren \emph{result\_matrix\_new\_ksearch()}, \emph{nbest\_new\_ksearch()} 
-und  \emph{threshold\_new\_ksearch()} eine ausgabespezifische Ergebnisstruktur erstellen und neben dieser Struktur auch eine Callback-Funktion an 
-die \emph{enumerate\_results\_ksearch()} Funktion übergeben. Wie der Name der Funktion bereits anzeigt, berechnet die Funktion due \emph{KSEARCH}-Scores
-sequenziell und ruft für jeden berechneten Score die übergebene Callback Funktion auf. Dieser wird auch die Ergebnisstruktur übergeben, so dass diese
-der gewünschten Ausgabe entsprechend gefüllt werden kann. Abbildungen
-\ref{manbes} und \ref{thresh} zeigen Sequenzdiagramme, die die
-Reihenfolge und Struktur der Aufrufe und der entsprechenden Datanstrukturen am
-Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Konstruktors.
 
 %\begin{center}
 %  \begin{figure}
@@ -350,10 +318,7 @@ Beispiel des \emph{nbest\_new\_ksearch} bzw. des \emph{thresh\_new\_ksearch} Kon
 %  \end{figure}
 %\end{center}
 
-Für die \emph{matrix}-Option ist diese Rückgabestruktur ein einfaches zweidimensionales Array. Für die \emph{nbest} Option wurde eine in den genometools
-bereits vorhandene Implementierung eines Red-Black-Trees als verkettete Liste genutzt. Diese kann schnell prüfen, ob ein neu generierter Score kleiner oder
-größer als das bisher kleinste Element ist und entsprechend verfahren. Im Falle der \emph{threshold}-Option ist keine Ergebnisstruktur nötig,
-da ein berechneter Score, der über dem gegebenen Schwellwert liegt, unmittelbar ausgegeben werden kann.
+
 
 \section{Auswertung und Diskussion}
 
@@ -428,6 +393,7 @@ Implementierungen eine vergleichbare Sensitivität erreichen.
 \end{figure}
 
 \subsubsection{Area under the curve (AUC)}
+
 
 Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagramm erstellt, und daraus die AUC berechnet. Die AUC ist die Fläche unter der Kurve, also das Integral. Das precision-recall-Diagramm erhält man, indem Präzision (precision) $p$ gegen die Wiederfindungsrate (recall) $r$ geplottet wird. Beide Werte werden errechnet, indem als erstes eine Liste \textit l mit einem Referenz-Algorithmus erstellt, und anschließend anhand dieser Liste \textit p und \textit r des zu testenden Algorithmus ermittelt werden.\\In Liste \textit l wurden alle SSEARCH-Treffer aus dem Query-Datensatz, welche einen e-Value niedriger als eins aufwiesen, eingetragen. Anschließend wurde mit den bestem 1000 Treffern \textit t jedes Query-Proteins Präzision (precision) $p = \frac{t_0 ... t_i \in l}{t_0 ... t_i}$ und Wiederfindungsrate (recall) $r = \frac {t_0 ... t_i \in l}{t \in l}$ berechnet und das precision-recall-Diagramm erstellt. Dabei gibt die Wiederfindungsrate \textit r an, wie viele der richtigen Treffer von \textit t zum Zeitpunkt \textit i bereits gefunden wurden. Die Präzision \textit p gibt die Anzahl der richtigen Treffer, im Verhältnis zu allen zum Zeitpunkt \textit i bereits betrachteten Treffern, an. Da \textit p und \textit r Werte zwischen 0 und 1 annehmen, hat die AUC im besten Fall den Wert 1. Im Allgemeinen nimmt mit zunehmender Wiederfindungsrate die Präzision ab, da bei einem kleinen AUC-Wert viele false positives auftreten, bis die maximale Anzahl aller richtigen Treffer ermittelt ist. Je kleiner also der Wert für AUC, desto ineffizienter ist der Algorithmus.\\Zu beachten ist, dass beim Plotten von \textit p gegen \textit r nur ein Punktdiagramm entsteht. Die darin enthaltenen Punkte können nicht interpoliert werden, wodurch die Kurve für die AUC nur näherungsweise bestimmt werden kann.\\Die Ergebnisse sind in Tab. 2 veranschaulicht. Es wurde für jedes query-Protein eine AUC erstellt, und daraus der Durchschnitt berechnet. Die Werte aus \cite{Holm} konnten bestätigt werden.
 
