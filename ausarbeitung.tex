@@ -8,7 +8,7 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 \usepackage{listings}
-\usepackage[fleqn]{amsmath}
+%\usepackage[fleqn]{amsmath}
 
 %\usepackage{algorithmic}
 \usepackage{cite}
@@ -109,7 +109,10 @@ für alle database-Proteine also in $O(|d_1..d_n|)$. Dazu kommt die Berechnung d
       \EndFor \Comment $\mathbf{O(|Q| \cdot kVariety(d))}$
     \EndFor   \Comment $\mathbf{O(|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$  
   \EndFunction 
-  \Comment overall time complexity: $\mathbf{O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+  \Comment overall time complexity: 
+  \begin{flushright}
+  $\mathbf{O(|q_1..q_n|+|d_1..d_n|+|D| \cdot |Q| \cdot kVariety(d))}$
+  \end{flushright}
 \end{algorithmic}
 \end{algorithm}
 
@@ -135,10 +138,9 @@ Wenn für alle Suffixe aus \emph{Suffixarray$_Q$} die Scores aktualisiert wurden
 
 Formal berechnet sich der \emph{SANS(query,database)} also folgendermaßen:\\
 
-\begin{equation*}
-  \begin{split}
-\text{\emph{SANS(query,database)}} = \\ \sum_{s \in \text{\emph{suffixe$_q$}}} \sum_{j=-h}^{+h} \text{\emph{id(database,Suffixarray$_D[$position$_D(s)  +j]$.protein)}} 
-  \end{split}
+ \begin{equation*}
+   \text{\emph{SANS(query,database)}} = \\ \sum_{s \in \text{\emph{suffixe$_q$}}} \sum_{j=-h}^{+h}
+  \text{\emph{id(database,Suffixarray$_D[$position$_D(s)  +j]$.protein)}} 
 \end{equation*}
 
 mit\\
@@ -153,7 +155,7 @@ id(a,b)=\begin{cases}
   1,  & if~a=b\\
   0,  & if~a\ne b\\
 \end{cases}
-\end{equation*}.
+\end{equation*}\\
 
 Auch bei der Berechnung des \emph{SANS}-Scores werden Suffixe, die an 1., 2., und 3., bzw. an 1., 3., und 5. Position dieselben Zeichen enthalten, nicht bei der Berechnung des Scores berücksichtigt, um eine künstliche Erhöhung des Scores durch kurze Tandem Repeats zu vermeiden.\\
 Koskinen und Holm setzen die Fenstergröße $h$ standardmäßig auf die Größe der als
@@ -204,7 +206,10 @@ die Berechnung der Scores eine Laufzeit von ${O(|q_0..q_n|\cdot2h +
        \EndFor \Comment $\mathbf{O(2h)}$
      \EndFor \Comment $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|)}$
     \EndFunction  
-    \Comment{overall time complexity:$\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}   \\
+    \Comment{overall time complexity:
+    \begin{flushright}
+    $\mathbf{O(|q_0..q_n|\cdot2h + |d_0..d_n|+|Q|\cdot|D|)}$}
+    \end{flushright}   \\
     
     \Function{findPosition}{$suffix$, $suffixarray_D$, $position$}
       \For{$i$ in $position$..$suffixarray_D$.length}
@@ -376,8 +381,8 @@ unserer eigenen Implementierung bei Sequenzidentität von mehr als $90\%$ gering
 Die Sensitivitäten beider Algorithmen liegen zwischen $0.972$ und $0.999$.
 Die minimalen Unterschiede von höchstens $0.03$ können verschiedene Gründe haben, hängen jedoch wahrscheinlich mit Implementierungsdetails
 oder -fehlern zusammen. So wird beispielsweise in der Koskien und Holm Implementierung das letzte query-Protein grundsätzlicht nicht berücksichtigt, was sich auf die Scores auswirkt.
-Unsere Analysen haben ergeben, dass diese Sensitivität durch die Nutzung der
-GenomeTools-internen Sortierung der Aminosäuren anstelle der lexikographischen Ordnung noch geringfügig erhöht werden kann (siehe Abbildung \ref{barplot_sup} im Anhang).
+%Unsere Analysen haben ergeben, dass diese Sensitivität durch die Nutzung der
+%GenomeTools-internen Sortierung der Aminosäuren anstelle der lexikographischen Ordnung noch geringfügig erhöht werden kann (siehe Abbildung \ref{barplot_sup} im Anhang).
 
 \begin{figure}[h]
   \begin{center}
@@ -403,7 +408,7 @@ Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagr
       SANS KH & SANS MMF\\
       h = 1000 & h = 1000 \\
       \hline
-      0,9677 & 0,9291 \\
+      0,54 & 0,72 \\
       \hline
     \end{tabular}
   \end{table}
@@ -416,15 +421,15 @@ Um die Effizienz eines Algorithmus zu ermitteln, wird ein precision-recall-Diagr
 \section{Anhang}
 \subsection*{bla\_seqscore.h}
 \lstinputlisting{bla_seqscore.h}
-\subsection{Sensitivitätsvergleich sortierungsabhängig}
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=0.6\textwidth]{img/barplot_gtsort.png}
-    \caption{Sensitivität des selbst implementierten \emph{SANS}-Algorithmus bei Nutzung der GenomeTools internen Sortierung der Aminosäuren und dem aus \cite{Holm} mit lexikographischer
-      Sortierung.} 
-    \label{barplot_sup}
-  \end{center}
-\end{figure}
+%\subsection{Sensitivitätsvergleich sortierungsabhängig}
+%\begin{figure}[h]
+ % \begin{center}
+   % \includegraphics[width=0.6\textwidth]{img/barplot_gtsort.png}
+    %\caption{Sensitivität des selbst implementierten \emph{SANS}-Algorithmus bei Nutzung der GenomeTools internen Sortierung der Aminosäuren und dem aus \cite{Holm} mit lexikographischer
+   %   Sortierung.} 
+    %\label{barplot_sup}
+  %\end{center}
+%\end{figure}
 
 
 \end{document}
